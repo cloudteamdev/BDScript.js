@@ -1,5 +1,5 @@
 import { Interaction, InteractionReplyOptions, MessageOptions, TextChannel, UnsafeModalBuilder } from "discord.js";
-import { noop } from "../internal functions";
+import { noop } from "../helpers";
 import { ReplyTypes } from "../typings";
 
 export class Container {
@@ -16,7 +16,7 @@ export class Container {
 
     setChannel(channel: unknown) {
         this.mainChannel = channel
-        return this 
+        return this
     }
 
     async send<T>(content?: string, channel?: unknown): Promise<T | null> {
@@ -30,7 +30,7 @@ export class Container {
             return null
         }
 
-        let value: T | null = null 
+        let value: T | null = null
 
         if (receipt instanceof Interaction) {
             if (receipt.isRepliable()) {
@@ -43,20 +43,20 @@ export class Container {
                 }
 
                 if (this.replyType === 'showModal') {
-                    value = await receipt.showModal(this.modal).catch(noop) as T 
+                    value = await receipt.showModal(this.modal).catch(noop) as T
                 } else {
-                    value = await receipt[this.replyType as 'reply'](this.data).catch(noop) as T 
+                    value = await receipt[this.replyType as 'reply'](this.data).catch(noop) as T
                 }
             }
         }
-        // We can reply to any object that has the send method. 
+        // We can reply to any object that has the send method.
         else if ((this.replyType in receipt)) {
-            value = await (receipt as TextChannel).send(this.data).catch(noop) as T 
+            value = await (receipt as TextChannel).send(this.data).catch(noop) as T
         }
-        
+
         this.reset()
 
-        return value ?? null 
+        return value ?? null
     }
 
     static get DefaultOptions(): MessageOptions & InteractionReplyOptions {

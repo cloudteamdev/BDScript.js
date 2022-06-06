@@ -1,4 +1,4 @@
-import { intoFunction } from "../../internal functions"
+import { intoFunction } from "../../helpers"
 import { ConditionData } from "./ConditionData"
 import { CompiledFunctionData } from "./CompiledFunctionData"
 import { ParserFunction } from "../../structures"
@@ -26,5 +26,5 @@ export interface FieldData<T extends CompiledFunctionData | ParserFunction<ArgDa
     /**
      * The executor function
      */
-    executor: ReturnType<typeof intoFunction> | null 
+    executor: ReturnType<typeof intoFunction> | null
 }

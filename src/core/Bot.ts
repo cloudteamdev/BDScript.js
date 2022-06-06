@@ -1,5 +1,5 @@
 import { Client } from "discord.js";
-import log from "../internal functions/log";
+import log from "../helpers/log";
 import { CommandManager, EventManager } from "../managers";
 import { BotOptions } from "../typings";
 
@@ -15,7 +15,7 @@ export class Bot {
 
     constructor(options: BotOptions) {
         this.options = this.#validateOptions(options)
-        
+
         this.client = new Client({
             intents: this.options.intents!,
             ...this.options.client
@@ -43,7 +43,7 @@ export class Bot {
 
             this.#prefixes = typeof this.options.prefix === 'string' ? [
                 this.options.prefix
-            ] : Array.isArray(this.options.prefix) ? this.options.prefix : 
+            ] : Array.isArray(this.options.prefix) ? this.options.prefix :
             [
                 ...this.options.prefix.prefixes,
                 c.user.toString(),

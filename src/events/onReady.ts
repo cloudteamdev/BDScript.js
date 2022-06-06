@@ -1,4 +1,4 @@
-import { createEventHandler } from "../internal functions/createEventHandler";
+import { createEventHandler } from "../helpers/createEventHandler";
 
 export default createEventHandler("ready", function() {
 

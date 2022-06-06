@@ -1,6 +1,6 @@
 import { messageCommands } from "../handlers";
-import { createEventHandler } from "../internal functions/createEventHandler";
+import { createEventHandler } from "../helpers/createEventHandler";
 
 export default createEventHandler("messageCreate", function (m) {
-    messageCommands(this, m)  
+    messageCommands(this, m)
 })

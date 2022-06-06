@@ -1,5 +1,5 @@
 import { readdirSync } from "fs"
-import { iterate } from "../internal functions"
+import { iterate } from "../helpers"
 import { ParserFunction } from "../structures"
 import { ArgData, CompilerFunctionData, FunctionData } from "../typings"
 import { Compiler } from "../core/Compiler"
@@ -33,7 +33,7 @@ export default new class {
                 optional: !element.required
             }
         })
-        return arr 
+        return arr
     }
 
     compile(...params: ConstructorParameters<typeof Compiler<any>>) {

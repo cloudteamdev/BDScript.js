@@ -1,4 +1,4 @@
-import { intoFunction, iterate } from "../internal functions"
+import { intoFunction, iterate } from "../helpers"
 import FunctionManager from "../managers/FunctionManager"
 import { ParserFunction } from "../structures"
 import { CompiledFunctionData, MatchedFunctionData, FunctionPosition, FieldData, CompilerFunctionData, ArgData } from "../typings"
@@ -14,7 +14,7 @@ export class Compiler<T extends unknown & { toString(): string }> {
     static insensitive = false
 
     private static BRACKET_FUNCTIONS: Record<string, true | null> = {}
-    private static FUNCTIONS: Array<string | CompilerFunctionData> | null = null 
+    private static FUNCTIONS: Array<string | CompilerFunctionData> | null = null
     private static REGEX: RegExp | null = null
 
     private code: string
@@ -49,7 +49,7 @@ export class Compiler<T extends unknown & { toString(): string }> {
 
             const has = Compiler.BRACKET_FUNCTIONS[name]
 
-            const brackets = has === undefined ? false : has 
+            const brackets = has === undefined ? false : has
 
             return {
                 name,
@@ -66,10 +66,10 @@ export class Compiler<T extends unknown & { toString(): string }> {
 
     static setFunctions(fns: Array<string | CompilerFunctionData>, insensitive = false) {
         if (Compiler.FUNCTIONS !== null) return false
-        
+
         Compiler.FUNCTIONS = fns.sort(
             (x, y) => getString(y).length - getString(x).length
-        ) 
+        )
 
         for (let i = 0, len = Compiler.FUNCTIONS.length;i < len;i++) {
             const fn = Compiler.FUNCTIONS[i]
@@ -78,17 +78,17 @@ export class Compiler<T extends unknown & { toString(): string }> {
             }
 
             if (!fn.brackets) continue
-            
+
             this.BRACKET_FUNCTIONS[fn.name] = fn.optional ? null : true
         }
 
         Compiler.insensitive = insensitive
 
         Compiler.REGEX = new RegExp(fns.map(
-            c => typeof c === 'string' ? `\\${c}` : `\\${c.name}` 
+            c => typeof c === 'string' ? `\\${c}` : `\\${c.name}`
         ).join('|'), `gm${insensitive ? 'i' : ''}`)
 
-        return true 
+        return true
     }
 
     private skip(n: number) {
@@ -102,7 +102,7 @@ export class Compiler<T extends unknown & { toString(): string }> {
     private readFunctionFields(raw: MatchedFunctionData): CompiledFunctionData {
         let closed = false
         let escape = false
-        
+
         this.skip(1)
 
         let len = 0
@@ -111,7 +111,7 @@ export class Compiler<T extends unknown & { toString(): string }> {
             {
                 value: '',
                 overloads: [],
-                executor: null 
+                executor: null
             }
         ])
 
@@ -121,23 +121,23 @@ export class Compiler<T extends unknown & { toString(): string }> {
             if (escape) {
                 ref.inside += char
                 ref.fields[len].value += char
-                escape = false 
+                escape = false
                 continue
             }
-            
+
             if (this.isEscapeChar(char)) {
-                escape = true 
+                escape = true
                 continue
             } else if (this.isDollar(char)) {
                 if (this.#matches.length !== 0 && this.#matches[0].position === this.index - 1) {
                     this.index--
-                    const fn = this.parseFunction(false) as CompiledFunctionData 
+                    const fn = this.parseFunction(false) as CompiledFunctionData
                     ref.inside += fn.id
-                    ref.fields[len].value += fn.id 
+                    ref.fields[len].value += fn.id
                     ref.fields[len].overloads.push(fn)
                 } else {
-                    ref.inside += char 
-                    ref.fields[len].value += char 
+                    ref.inside += char
+                    ref.fields[len].value += char
                 }
             } else if (this.isBracketClosure(char)) {
                 closed = true
@@ -152,7 +152,7 @@ export class Compiler<T extends unknown & { toString(): string }> {
                     {
                         value: '',
                         overloads: [],
-                        executor: null 
+                        executor: null
                     }
                 )
             } else {
@@ -165,7 +165,7 @@ export class Compiler<T extends unknown & { toString(): string }> {
             this.throw(raw, `${raw.name} is missing closure bracket`)
         }
 
-        return ref 
+        return ref
     }
 
     /**
@@ -176,9 +176,9 @@ export class Compiler<T extends unknown & { toString(): string }> {
     }
 
     private push(str: string) {
-        this.result += str 
+        this.result += str
 
-        return this 
+        return this
     }
 
     /**
@@ -186,8 +186,8 @@ export class Compiler<T extends unknown & { toString(): string }> {
      */
     start() {
         if (!this.#matches.length) {
-            this.result = this.code 
-            return this 
+            this.result = this.code
+            return this
         }
 
         while (!this.eof()) {
@@ -202,12 +202,12 @@ export class Compiler<T extends unknown & { toString(): string }> {
                 this.push(got.id)
             )
         }
-        
-        return this 
+
+        return this
     }
 
     private back(): string {
-        return this.code[this.index - 1] 
+        return this.code[this.index - 1]
     }
 
     private isBracketOpen(t: string) {
@@ -245,7 +245,7 @@ export class Compiler<T extends unknown & { toString(): string }> {
             ) : pos.column++
         }
 
-        return pos 
+        return pos
     }
 
     private throw<T>(ref: MatchedFunctionData, err: string): T {
@@ -255,7 +255,7 @@ export class Compiler<T extends unknown & { toString(): string }> {
 
     private parseFunction(allow = true): CompiledFunctionData | null | string {
         const next = this.#matches.shift()
-        if (!next) return null 
+        if (!next) return null
 
         const old = this.index
 
@@ -269,9 +269,9 @@ export class Compiler<T extends unknown & { toString(): string }> {
 
         this.index += next.size
 
-        return isEscapeChar ? 
-            next.name : next.brackets === false ? 
-                this.createFunction(next.name) : 
+        return isEscapeChar ?
+            next.name : next.brackets === false ?
+                this.createFunction(next.name) :
                 next.brackets === true ?
                     !this.isBracketOpen(this.char()!) ? this.throw(next, `${next.name} requires brackets`) :
                     this.readFunctionFields(next) :
@@ -283,21 +283,21 @@ export class Compiler<T extends unknown & { toString(): string }> {
         return {
             name,
             id: this.systemID,
-            fields, 
+            fields,
             inside
         }
     }
 
     private next(): string | null {
-        return this.code[this.index++] ?? null 
+        return this.code[this.index++] ?? null
     }
 
     private char(): string | null {
-        return this.code[this.index] ?? null 
+        return this.code[this.index] ?? null
     }
 
     private eof() {
-        return this.char() === null 
+        return this.char() === null
     }
 
     /**

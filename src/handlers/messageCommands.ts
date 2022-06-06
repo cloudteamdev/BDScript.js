@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import { Bot } from "../core";
-import { iterate } from "../internal functions";
+import { iterate } from "../helpers";
 import { Interpreter } from "../structures";
 import { OutputType } from "../typings";
 

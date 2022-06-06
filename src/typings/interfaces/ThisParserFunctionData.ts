@@ -1,5 +1,5 @@
 import { Bot } from "../../core"
-import { intoFunction } from "../../internal functions"
+import { intoFunction } from "../../helpers"
 import { Command, type ParserFunction } from "../../structures"
 import { Container } from "../../structures/Container"
 import { OutputType } from "../enums"
@@ -14,5 +14,5 @@ export interface ThisParserFunctionData<Ctx = unknown, Out extends OutputType = 
     command?: Command<AnyCommandData>
     executor: ReturnType<typeof intoFunction>
     functions: ParserFunction<ArgData[]>[]
-    output?: Out 
+    output?: Out
 }
