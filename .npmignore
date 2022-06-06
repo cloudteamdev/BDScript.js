@@ -5,3 +5,4 @@ docs
 dist/__tests__/
 src
 dist/development
+tsconfig.tsbuildinfo
