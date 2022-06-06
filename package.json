@@ -6,7 +6,10 @@
   "types": "dist/index.d.ts",
   "module": "dist/index.mjs",
   "scripts": {
-    "test": "tsc && node dist/__tests__/runner"
+    "test": "tsc && node dist/__tests__/runner",
+    "docs": "typedoc src/index.ts",
+    "esm": "gen-esm-wrapper . dist/index.mjs",
+    "prepublishOnly": "tsc && npm run docs && npm run esm"
   },
   "keywords": [],
   "author": "",
