@@ -1,0 +1,7 @@
+docs
+.vscode
+.idea
+.env
+dist/__tests__/
+src
+dist/development

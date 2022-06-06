@@ -1,0 +1,1 @@
+{"version":3,"file":"ConditionData.d.ts","sourceRoot":"","sources":["../../../src/typings/interfaces/ConditionData.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;AACzC,OAAO,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAExC,MAAM,WAAW,aAAa;IAC1B,EAAE,EAAE,aAAa,CAAA;IACjB,IAAI,EAAE,IAAI,CAAC,SAAS,EAAE,WAAW,CAAC,CAAA;IAClC,KAAK,EAAE,IAAI,CAAC,SAAS,EAAE,WAAW,CAAC,CAAA;CACtC"}
