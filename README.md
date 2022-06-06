@@ -7,7 +7,7 @@ import { Intents } from "discord.js";
 import { Bot } from "djs-bdscript";
 
 const client = new Bot({
-    intents: [Intents.FLAGS.GUILD],
+    intents: Intents.FLAGS.Guilds | Intents.Flags.GuildMessages,
 });
 
 client.login("token");
