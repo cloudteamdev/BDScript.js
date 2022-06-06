@@ -1,10 +1,11 @@
 import { OutputType, ThisParserFunctionData } from "../typings";
+import { Container } from "./Container";
 import { ThisParserFunction } from "./ThisParserFunction";
 
 type DecideOutput<T extends OutputType> = 
     T extends OutputType.None ? null : 
     T extends OutputType.Code ? string :
-    T extends OutputType.Container ? unknown :
+    T extends OutputType.Container ? Container :
     string
 
 export class Interpreter {
@@ -31,6 +32,8 @@ export class Interpreter {
 
         thisArg.data.container.send(raw, thisArg.mainChannel)
 
-        return null as any 
+        return (thisArg.data.output === undefined || thisArg.data.output === OutputType.Code ? raw : 
+            thisArg.data.output === OutputType.None ? null :
+            thisArg.data.container) as DecideOutput<P>
     }
 }

@@ -1,8 +1,9 @@
 import { Bot } from "../../core"
 import { intoFunction } from "../../internal functions"
-import { type ParserFunction } from "../../structures"
+import { Command, type ParserFunction } from "../../structures"
 import { Container } from "../../structures/Container"
 import { OutputType } from "../enums"
+import { AnyCommandData } from "../types"
 import { ArgData } from "./ArgData"
 
 export interface ThisParserFunctionData<Ctx = unknown, Out extends OutputType = OutputType> {
@@ -10,7 +11,7 @@ export interface ThisParserFunctionData<Ctx = unknown, Out extends OutputType = 
     args: string[]
     bot: Bot
     container: Container
-    command?: unknown
+    command?: Command<AnyCommandData>
     executor: ReturnType<typeof intoFunction>
     functions: ParserFunction<ArgData[]>[]
     output?: Out 
