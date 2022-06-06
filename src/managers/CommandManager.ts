@@ -1,34 +1,49 @@
 import { Collection } from "discord.js";
 import { Command } from "../structures";
-import { AnyCommandData, CommandDataWithType, CommandType, CommandTypes, MessageCommand } from "../typings";
+import {
+    AnyCommandData,
+    CommandDataWithType,
+    CommandType,
+    CommandTypes,
+    MessageCommand,
+} from "../typings";
 
-export class CommandManager extends Collection<CommandTypes, Collection<number, Command<AnyCommandData>>> {
-    getMessageCommands(): Collection<number, Command<MessageCommand & CommandDataWithType>> {
-        return this.ensure("MessageCommand", () => new Collection())
+export class CommandManager extends Collection<
+    CommandTypes,
+    Collection<number, Command<AnyCommandData>>
+> {
+    getMessageCommands(): Collection<
+        number,
+        Command<MessageCommand & CommandDataWithType>
+    > {
+        return this.ensure("MessageCommand", () => new Collection());
     }
-    
+
     messageCommand(data: MessageCommand) {
         return this.addRaw({
             ...data,
-            type: CommandType.MessageCommand
-        })
+            type: CommandType.MessageCommand,
+        });
     }
 
     private addRaw(...raw: AnyCommandData[] | AnyCommandData[][]) {
-        for (let i = 0, len = raw.length;i < len;i++) {
-            const el = raw[i]
+        for (let i = 0, len = raw.length; i < len; i++) {
+            const el = raw[i];
             if (Array.isArray(el)) {
-                this.addRaw(el)
+                this.addRaw(el);
             } else {
-                const col = this.ensure(this.#typeToString(el.type), () => new Collection())
-                const id = col.size
-                col.set(id, new Command(id, el))
+                const col = this.ensure(
+                    this.#typeToString(el.type),
+                    () => new Collection()
+                );
+                const id = col.size;
+                col.set(id, new Command(id, el));
             }
         }
-        return this 
+        return this;
     }
 
     #typeToString(value: CommandType): CommandTypes {
-        return CommandType[value] as CommandTypes
+        return CommandType[value] as CommandTypes;
     }
 }

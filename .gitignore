@@ -6,3 +6,4 @@ node_modules
 dist
 */**/*.json
 tsconfig.tsbuildinfo
+pnpm-lock.yaml

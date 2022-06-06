@@ -1,8 +1,1 @@
-export const Operators = [
-    ">=",
-    "<=",
-    ">",
-    "<",
-    "==",
-    "!="
-] as const
+export const Operators = [">=", "<=", ">", "<", "==", "!="] as const;

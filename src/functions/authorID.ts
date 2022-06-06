@@ -6,7 +6,7 @@ export default ParserFunction.create({
     description: "Returns the author's ID",
     returns: ArgType.String,
     nullable: true,
-    execute: async function() {
-        return Return.success(this.user?.id)
-    }
-})
+    execute: async function () {
+        return Return.success(this.user?.id);
+    },
+});

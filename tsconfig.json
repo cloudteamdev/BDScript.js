@@ -9,7 +9,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "incremental": true,
+    // "incremental": true,
     "lib": ["esnext"],
     "module": "CommonJS",
     "moduleResolution": "Node",

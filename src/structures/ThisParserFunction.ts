@@ -1,62 +1,69 @@
-import { GuildMember, Message, TextBasedChannel, User } from "discord.js"
-import { Nullable, OutputType, ThisParserFunctionData } from "../typings"
-import { Container } from "./Container"
-import { Return } from "./Return"
+import { GuildMember, Message, TextBasedChannel, User } from "discord.js";
+import { Nullable, OutputType, ThisParserFunctionData } from "../typings";
+import { Container } from "./Container";
+import { Return } from "./Return";
 
 export class ThisParserFunction<T = unknown> {
-    readonly data: ThisParserFunctionData<T>
+    readonly data: ThisParserFunctionData<T>;
 
-    readonly #environment: Record<PropertyKey, unknown> = {}
-    readonly #keywords: Record<string, string> = {}
-    
-    #user: Nullable<User> = null 
-    #mainChannel: Nullable<TextBasedChannel> = null 
+    readonly #environment: Record<PropertyKey, unknown> = {};
+    readonly #keywords: Record<string, string> = {};
+
+    #user: Nullable<User> = null;
+    #mainChannel: Nullable<TextBasedChannel> = null;
 
     constructor(data: ThisParserFunctionData<T>) {
-        this.data = data
+        this.data = data;
     }
 
-    async manage<T extends Return>(rt: T, callback: (received: T extends Return<infer V> ? Exclude<V, null> : never) => Return): Promise<Return> {
+    async manage<T extends Return>(
+        rt: T,
+        callback: (
+            received: T extends Return<infer V> ? Exclude<V, null> : never
+        ) => Return
+    ): Promise<Return> {
         if (rt.isError()) {
-            return rt 
+            return rt;
         }
 
-        return callback(rt.value)
+        return callback(rt.value);
     }
 
     get ctx() {
-        return this.data.ctx
+        return this.data.ctx;
     }
 
     get mainChannel() {
-        return this.#mainChannel ??= this.getMainChannel() 
+        return (this.#mainChannel ??= this.getMainChannel());
     }
 
     get user() {
-        return this.#user ??= this.getUser()
+        return (this.#user ??= this.getUser());
     }
 
     private getUser(): Nullable<User> {
         if (this.ctx instanceof User) {
-            return this.ctx 
+            return this.ctx;
         } else if (this.ctx instanceof Message) {
-            return this.ctx.author
+            return this.ctx.author;
         } else if (this.ctx instanceof GuildMember) {
-            return this.ctx.user
+            return this.ctx.user;
         }
 
-        return null 
+        return null;
     }
 
-    private getMainChannel(): Nullable<TextBasedChannel> {  
+    private getMainChannel(): Nullable<TextBasedChannel> {
         if (this.ctx instanceof Message) {
-            return this.ctx.channel
+            return this.ctx.channel;
         }
 
-        return null
+        return null;
     }
 
-    static create<T, O extends OutputType>(extras: Partial<ThisParserFunctionData<T, O>>) {
+    static create<T, O extends OutputType>(
+        extras: Partial<ThisParserFunctionData<T, O>>
+    ) {
         return new this({
             args: extras.args ?? [],
             ctx: extras.ctx!,
@@ -64,7 +71,7 @@ export class ThisParserFunction<T = unknown> {
             executor: extras.executor!,
             functions: extras.functions!,
             bot: extras.bot!,
-            container: extras.container ?? new Container()
-        })
+            container: extras.container ?? new Container(),
+        });
     }
 }

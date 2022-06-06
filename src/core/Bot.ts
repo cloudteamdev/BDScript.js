@@ -3,58 +3,59 @@ import log from "../helpers/log";
 import { CommandManager, EventManager } from "../managers";
 import { BotOptions } from "../typings";
 
-
 export class Bot {
-    readonly options: BotOptions
-    readonly client: Client<true>
+    readonly options: BotOptions;
+    readonly client: Client<true>;
 
-    #prefixes: string[] = []
+    #prefixes: string[] = [];
 
-    readonly events = new EventManager(this)
-    readonly commands = new CommandManager()
+    readonly events = new EventManager(this);
+    readonly commands = new CommandManager();
 
     constructor(options: BotOptions) {
-        this.options = this.#validateOptions(options)
+        this.options = this.#validateOptions(options);
 
         this.client = new Client({
             intents: this.options.intents!,
-            ...this.options.client
-        })
+            ...this.options.client,
+        });
     }
 
     #validateOptions(options: BotOptions) {
         if (options.client?.intents !== undefined) {
-            options.intents = options.client.intents
+            options.intents = options.client.intents;
         }
 
-        return options
+        return options;
     }
 
     get prefixes(): string[] {
-        return this.#prefixes
+        return this.#prefixes;
     }
 
     #registerDefaultReadyEvent() {
-        const count = this.client.listenerCount('ready')
+        const count = this.client.listenerCount("ready");
         this.client.once("ready", (c) => {
             if (!count) {
-                log(this)
+                log(this);
             }
 
-            this.#prefixes = typeof this.options.prefix === 'string' ? [
-                this.options.prefix
-            ] : Array.isArray(this.options.prefix) ? this.options.prefix :
-            [
-                ...this.options.prefix.prefixes,
-                c.user.toString(),
-                // Don't mind deleting this line if the api never retrieves @!.
-                c.user.toString().replace('@', '@!')
-            ]
-        })
+            this.#prefixes =
+                typeof this.options.prefix === "string"
+                    ? [this.options.prefix]
+                    : Array.isArray(this.options.prefix)
+                    ? this.options.prefix
+                    : [
+                          ...this.options.prefix.prefixes,
+                          c.user.toString(),
+                          // Don't mind deleting this line if the api never retrieves @!.
+                          c.user.toString().replace("@", "@!"),
+                      ];
+        });
     }
 
     login(token = this.options.token) {
-        this.#registerDefaultReadyEvent()
-        this.client.login(token)
+        this.#registerDefaultReadyEvent();
+        this.client.login(token);
     }
 }

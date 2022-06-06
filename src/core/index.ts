@@ -1,2 +1,2 @@
-export * from "./Compiler"
-export * from "./Bot"
+export * from "./Compiler";
+export * from "./Bot";

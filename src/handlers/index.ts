@@ -1,1 +1,1 @@
-export * from "./messageCommands"
+export * from "./messageCommands";
