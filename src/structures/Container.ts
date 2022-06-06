@@ -1,62 +1,74 @@
-import { Interaction, InteractionReplyOptions, MessageOptions, TextChannel, UnsafeModalBuilder } from "discord.js";
+import {
+    Interaction,
+    InteractionReplyOptions,
+    MessageOptions,
+    TextChannel,
+    UnsafeModalBuilder,
+} from "discord.js";
 import { noop } from "../helpers";
 import { ReplyTypes } from "../typings";
 
 export class Container {
-    data = Container.DefaultOptions
+    data = Container.DefaultOptions;
 
-    modal = new UnsafeModalBuilder()
-    replyType: ReplyTypes = "send"
+    modal = new UnsafeModalBuilder();
+    replyType: ReplyTypes = "send";
 
-    mainChannel?: unknown
+    mainChannel?: unknown;
 
     constructor(mainChannel?: unknown) {
-        this.mainChannel = mainChannel
+        this.mainChannel = mainChannel;
     }
 
     setChannel(channel: unknown) {
-        this.mainChannel = channel
-        return this
+        this.mainChannel = channel;
+        return this;
     }
 
     async send<T>(content?: string, channel?: unknown): Promise<T | null> {
-        if (channel) this.mainChannel = channel
+        if (channel) this.mainChannel = channel;
 
-        if (content !== undefined) this.data.content = content
+        if (content !== undefined) this.data.content = content;
 
-        const receipt = this.mainChannel!
+        const receipt = this.mainChannel!;
 
         if (receipt === undefined) {
-            return null
+            return null;
         }
 
-        let value: T | null = null
+        let value: T | null = null;
 
         if (receipt instanceof Interaction) {
             if (receipt.isRepliable()) {
                 if (receipt.replied) {
-                    this.replyType = 'followUp'
+                    this.replyType = "followUp";
                 } else if (receipt.deferred) {
-                    this.replyType = 'editReply'
+                    this.replyType = "editReply";
                 } else if (!(this.replyType in receipt)) {
-                    this.replyType = 'reply'
+                    this.replyType = "reply";
                 }
 
-                if (this.replyType === 'showModal') {
-                    value = await receipt.showModal(this.modal).catch(noop) as T
+                if (this.replyType === "showModal") {
+                    value = (await receipt
+                        .showModal(this.modal)
+                        .catch(noop)) as unknown as T;
                 } else {
-                    value = await receipt[this.replyType as 'reply'](this.data).catch(noop) as T
+                    value = (await receipt[this.replyType as "reply"](
+                        this.data
+                    ).catch(noop)) as unknown as T;
                 }
             }
         }
         // We can reply to any object that has the send method.
-        else if ((this.replyType in receipt)) {
-            value = await (receipt as TextChannel).send(this.data).catch(noop) as T
+        else if (this.replyType in (receipt as object)) {
+            value = (await (receipt as TextChannel)
+                .send(this.data)
+                .catch(noop)) as unknown as T;
         }
 
-        this.reset()
+        this.reset();
 
-        return value ?? null
+        return value ?? null;
     }
 
     static get DefaultOptions(): MessageOptions & InteractionReplyOptions {
@@ -64,13 +76,13 @@ export class Container {
             files: new Array(),
             ephemeral: false,
             embeds: new Array(),
-            content: null
-        }
+            content: null,
+        };
     }
 
     reset() {
-        this.replyType = 'send'
-        this.modal = new UnsafeModalBuilder()
-        this.data = Container.DefaultOptions
+        this.replyType = "send";
+        this.modal = new UnsafeModalBuilder();
+        this.data = Container.DefaultOptions;
     }
 }
