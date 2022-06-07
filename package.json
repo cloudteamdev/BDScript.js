@@ -9,7 +9,7 @@
         "test": "tsc && node dist/__tests__/runner",
         "docs": "typedoc --options typedoc.json",
         "esm": "gen-esm-wrapper . dist/index.mjs",
-        "prepublishOnly": "tsup && npm run docs && npm run esm",
+        "prepublishOnly": "tsc && npm run docs && npm run esm",
         "prepare": "husky install"
     },
     "keywords": [],
@@ -24,7 +24,6 @@
         "husky": "^8.0.1",
         "lint-staged": "^13.0.0",
         "prettier": "^2.6.2",
-        "tsup": "^6.1.0",
         "typedoc": "^0.22.17",
         "typescript": "4.7.3"
     },
@@ -35,26 +34,5 @@
     },
     "lint-staged": {
         "*.ts": "npx prettier --write --config .prettierrc"
-    },
-    "tsup": {
-        "clean": true,
-        "dts": true,
-        "entry": [
-            "src/**/*.ts",
-            "!src/**/*.d.ts"
-        ],
-        "minify": true,
-        "skipNodeModulesBundle": true,
-        "target": "esnext",
-        "bundle": false,
-        "shims": false,
-        "keepNames": true,
-        "splitting": false,
-        "suppress": true,
-        "format": [
-            "cjs",
-            "esm"
-        ],
-        "sourcemap": true
     }
 }
