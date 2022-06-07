@@ -1,5 +1,5 @@
 export enum OutputType {
     None,
     Container,
-    Code 
+    Code,
 }

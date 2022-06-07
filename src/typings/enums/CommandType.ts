@@ -1,3 +1,3 @@
 export enum CommandType {
-    MessageCommand
+    MessageCommand,
 }

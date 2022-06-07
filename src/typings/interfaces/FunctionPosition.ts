@@ -1,4 +1,4 @@
 export interface FunctionPosition {
-    column: number
-    line: number
+    column: number;
+    line: number;
 }

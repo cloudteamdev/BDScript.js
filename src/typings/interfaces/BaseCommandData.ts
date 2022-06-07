@@ -1,22 +1,22 @@
-import { CommandType } from "../enums"
+import { CommandType } from "../enums";
 
 export interface CommandDataWithType {
-    type: CommandType
+    type: CommandType;
 }
 
 export interface BaseCommandData {
-    code: string
-    [key: PropertyKey]: unknown
+    code: string;
+    [key: PropertyKey]: unknown;
 }
 
 export interface NamedCommandData extends BaseCommandData {
-    name: string
+    name: string;
 }
 
 export interface AliasesCommandData extends BaseCommandData {
-    aliases?: string[]
+    aliases?: string[];
 }
 
 export interface SkippablePrefixCommandData extends BaseCommandData {
-    skipPrefix?: boolean
+    skipPrefix?: boolean;
 }

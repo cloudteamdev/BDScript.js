@@ -10,6 +10,15 @@ export class EventManager extends Array<EventTypes> {
         this.bot = bot;
     }
 
+    /**
+     * Add a new event to listen for.
+     * ```ts
+     * bot.events.add("onReady", "onMessage");
+     * bot.events.add("onMessage");
+     * ```
+     * @note Some events require special intents.
+     * @param events The events to add.
+     */
     add(...events: EventTypes[] | EventTypes[][]) {
         for (let i = 0, len = events.length; i < len; i++) {
             const ev = events[i];
@@ -30,11 +39,12 @@ export class EventManager extends Array<EventTypes> {
         return this;
     }
 
-    #import(
+    async #import(
         eventName: EventTypes
     ): Promise<
         [keyof ClientEvents, Method<ClientEvents[keyof ClientEvents], any>]
     > {
-        return import(`../events/${eventName}`).then((c) => c.default);
+        const c = await import(`../events/${eventName}`);
+        return c.default;
     }
 }

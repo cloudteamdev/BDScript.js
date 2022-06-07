@@ -3,5 +3,5 @@ export enum ReturnType {
     Error,
     Return,
     Break,
-    Continue
+    Continue,
 }

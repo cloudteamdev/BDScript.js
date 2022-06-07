@@ -1,1 +1,1 @@
-export type EventTypes = "onReady" | "onMessage"
+export type EventTypes = "onReady" | "onMessage";

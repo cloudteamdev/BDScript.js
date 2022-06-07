@@ -1,21 +1,21 @@
 /**
  * Data that can be passed to the compiler.
  */
- export interface CompilerFunctionData {
+export interface CompilerFunctionData {
     /**
      * The name of the function.
      */
-    name: string
+    name: string;
 
     /**
      * Whether this function uses brackets.
      * @default true
      */
-    brackets?: boolean
+    brackets?: boolean;
 
     /**
      * Whether this function's brackets are optional.
      * @default true
      */
-    optional?: boolean
+    optional?: boolean;
 }

@@ -19,6 +19,18 @@ export class CommandManager extends Collection<
         return this.ensure("MessageCommand", () => new Collection());
     }
 
+    /**
+     * Creates a new message command.
+     * @note **Requires the message intent and message event enabled.**
+     * ```ts
+     * bot.commands.messageCommand({
+     *  name: "lol",
+     *  code: "uwu $authorID",
+     * });
+     * ```
+     * @param data
+     * @returns
+     */
     messageCommand(data: MessageCommand) {
         return this.addRaw({
             ...data,

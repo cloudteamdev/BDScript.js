@@ -5,18 +5,18 @@ export interface MatchedFunctionData {
     /**
      * The name of the function.
      */
-    name: string
+    name: string;
 
-    brackets: boolean | null 
+    brackets: boolean | null;
 
     /**
      * The position of the function in the code.
      */
-    position: number
+    position: number;
 
     /**
      * The size of the function.
      * @private
      */
-    size: number
+    size: number;
 }

@@ -1,30 +1,34 @@
-import { intoFunction } from "../../helpers"
-import { ConditionData } from "./ConditionData"
-import { CompiledFunctionData } from "./CompiledFunctionData"
-import { ParserFunction } from "../../structures"
-import { ArgData } from "./ArgData"
+import { intoFunction } from "../../helpers";
+import { ConditionData } from "./ConditionData";
+import { CompiledFunctionData } from "./CompiledFunctionData";
+import { ParserFunction } from "../../structures";
+import { ArgData } from "./ArgData";
 
 /**
  * Represents a function's field.
  */
-export interface FieldData<T extends CompiledFunctionData | ParserFunction<ArgData[]> = CompiledFunctionData | ParserFunction<ArgData[]>> {
+export interface FieldData<
+    T extends CompiledFunctionData | ParserFunction<ArgData[]> =
+        | CompiledFunctionData
+        | ParserFunction<ArgData[]>
+> {
     /**
      * The value of the field.
      */
-    value: string
+    value: string;
 
     /**
      * The functions used in this field.
      */
-    overloads: T[]
+    overloads: T[];
 
     /**
      * The condition of this field, needs to be checked and cached at runtime.
      */
-    condition?: ConditionData
+    condition?: ConditionData;
 
     /**
      * The executor function
      */
-    executor: ReturnType<typeof intoFunction> | null
+    executor: ReturnType<typeof intoFunction> | null;
 }

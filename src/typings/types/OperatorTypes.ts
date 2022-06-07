@@ -1,3 +1,3 @@
 import { Operators } from "../../constants";
 
-export type OperatorTypes = typeof Operators[number]
+export type OperatorTypes = typeof Operators[number];
