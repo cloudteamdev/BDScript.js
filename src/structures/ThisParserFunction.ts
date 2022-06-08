@@ -33,6 +33,10 @@ export class ThisParserFunction<T = unknown> {
         return this.data.ctx;
     }
 
+    get client() {
+        return this.data.bot.client;
+    }
+
     get mainChannel() {
         return (this.#mainChannel ??= this.getMainChannel());
     }
