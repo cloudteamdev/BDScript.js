@@ -16,7 +16,8 @@ export default ParserFunction.create({
     brackets: true,
     nullable: false,
     execute: async function (d) {
-        const text = d.fieldAt(0).value ?? "";
-        return Return.success(text.toLowerCase());
+        return this.manage(await d.resolveArray(this), ([str]) => {
+            return Return.success(str.toLowerCase());
+        });
     },
 });
