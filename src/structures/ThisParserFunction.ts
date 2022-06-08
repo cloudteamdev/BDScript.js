@@ -33,8 +33,18 @@ export class ThisParserFunction<T = unknown> {
         return this.data.ctx;
     }
 
+    /**
+     * Returns the discord.js client.
+     */
     get client() {
-        return this.data.bot.client;
+        return this.bot.client;
+    }
+
+    /**
+     * Returns the internal bot object which contains the `client`, `commands`, `events`, etc.
+     */
+    get bot() {
+        return this.data.bot;
     }
 
     get mainChannel() {
