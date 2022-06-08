@@ -13,7 +13,7 @@ const bot = new Bot({
 
 bot.commands.messageCommand({
     name: "lol",
-    code: "uwu $authorID",
+    code: "uwu $authorID $toLowerCase[HI]",
 });
 
 bot.events.add("onMessage");
