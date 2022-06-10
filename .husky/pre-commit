@@ -5,7 +5,7 @@ echo "Running pre-commit hook..."
 echo "Updating package-lock.json..."
 npm i --package-lock-only --silent
 echo "package-lock.json is up to date."
-echo -e "Running linter..."
+echo "Running linter..."
 npx lint-staged
-echo -e "Linting completed."
+echo "Linting completed."
 echo -e "\e[1;42mReady to commit\e[0;0m"
