@@ -3,7 +3,7 @@
 
 echo "Running pre-commit hook..."
 echo "Updating package-lock.json..."
-npm i --package-lock-only
+npm i --package-lock-only --silent
 echo "package-lock.json is up to date."
 echo -e "Running linter..."
 npx lint-staged
