@@ -1,4 +1,4 @@
-import { IntentsBitField } from "discord.js";
+import { ActivityType, IntentsBitField } from "discord.js";
 import { Bot } from "../core";
 import config from "./config.json";
 
@@ -9,6 +9,20 @@ const bot = new Bot({
         IntentsBitField.Flags.GuildMessages |
         IntentsBitField.Flags.Guilds |
         IntentsBitField.Flags.MessageContent,
+});
+
+bot.setStatusInterval(13_000);
+
+bot.addStatus({
+    status: "dnd",
+    name: "I'm busy!",
+    type: ActivityType.Playing,
+});
+
+bot.addStatus({
+    status: "idle",
+    name: "ok!",
+    type: ActivityType.Playing,
 });
 
 bot.commands.messageCommand({
