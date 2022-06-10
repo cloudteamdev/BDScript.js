@@ -61,18 +61,12 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         const args = new Array(this.data.args!.length) as UnwrapTuple<Args>;
 
         for (let i = 0, len = this.data.args!.length; i < len; i++) {
-            const arg = this.data.args![i];
-            const value = await this.parseArg(
-                thisArg,
-                arg,
-                this.compiledData!.fields[i].value
-            );
-
-            if (value === undefined) {
-                return Return.error;
+            const got = await this.resolveField(thisArg, i);
+            if (!got.isSuccess()) {
+                return got;
             }
 
-            args[i] = arg as UnwrapTuple<Args>[number];
+            args[i] = got.value as UnwrapTuple<Args>[number];
         }
 
         return Return.success(args);
@@ -124,7 +118,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             return Return.error;
         }
 
-        return parsed as UnwrapTuple<Args>[T];
+        return Return.success(parsed as UnwrapTuple<Args>[T]);
     }
 
     fieldAt(index: number): ProcessedCompiledFunctionData["fields"][number] {

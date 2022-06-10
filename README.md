@@ -26,6 +26,7 @@ client.login("token");
 - [ ] Buttons
 - [ ] Select Menus
 - [ ] Slash Commands
+- [x] Message Commands
 - [ ] Context Menus
 - [ ] Command handling
 - [ ] Modals

@@ -189,6 +189,8 @@ export class Compiler<T extends unknown & { toString(): string }> {
             this.throw(raw, `${raw.name} is missing closure bracket`);
         }
 
+        ref.fields[len].executor = intoFunction(ref.fields[len].value);
+
         return ref;
     }
 
