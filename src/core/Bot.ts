@@ -21,6 +21,11 @@ export class Bot {
         });
     }
 
+    /**
+     * Ensure that the provided options are valid and ready for use.
+     * @param options The BotOptions to validate.
+     * @returns Validated BotOptions
+     */
     #validateOptions(options: BotOptions) {
         if (options.client?.intents !== undefined) {
             options.intents = options.client.intents;
@@ -29,10 +34,16 @@ export class Bot {
         return options;
     }
 
+    /**
+     * The bot's prefixes.
+     */
     get prefixes(): string[] {
         return this.#prefixes;
     }
 
+    /**
+     * Registers default message printed when the client is ready.
+     */
     #registerDefaultReadyEvent() {
         const count = this.client.listenerCount("ready");
         this.client.once("ready", (c) => {
@@ -54,8 +65,16 @@ export class Bot {
         });
     }
 
+    /**
+     * Logins this client into Discord.
+     * @param token The token to login with. If omitted, the token provided in the constructor will be used.
+     */
     login(token = this.options.token) {
         this.#registerDefaultReadyEvent();
-        this.client.login(token);
+        this.client
+            .login(token)
+            .catch((err) =>
+                console.error("Failed to login to Discord.\n", err)
+            );
     }
 }

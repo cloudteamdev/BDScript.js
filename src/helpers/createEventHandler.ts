@@ -6,6 +6,16 @@ type EventHandler<T extends keyof ClientEvents> = (
     ...args: ClientEvents[T]
 ) => void | Promise<void>;
 
+/**
+ * Creates a new event handler.
+ * ```ts
+ * createEventHandler("messageCreate", function (m) {
+ *    messageCommands(this, m);
+ * });
+ * ```
+ * @param event The event name.
+ * @param callback Code to execute upon the event firing.
+ */
 export function createEventHandler<T extends keyof ClientEvents>(
     event: T,
     callback: EventHandler<T>

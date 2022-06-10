@@ -17,8 +17,8 @@ export default new (class {
             const file = files[i];
             if (!file.endsWith(".js")) continue;
 
-            const fn: ParserFunction<ArgData[]> = require("../functions/" +
-                file).default;
+            const fn: ParserFunction<ArgData[]> =
+                require(`../functions/${file}`).default;
             this.nativeFunctions.set(fn.data.name, fn.data);
         }
     }

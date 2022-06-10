@@ -1,4 +1,11 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "Running pre-commit hook..."
+echo "Updating package-lock.json..."
+npm i --package-lock-only
+echo "package-lock.json is up to date."
+echo -e "Running linter..."
 npx lint-staged
+echo -e "Linting completed."
+echo -e "\e[1;42mReady to commit\e[0;0m"
