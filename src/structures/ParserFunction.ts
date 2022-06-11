@@ -1,3 +1,4 @@
+import { Booleans, Falsy, Truthy } from "../constants";
 import { Compiler } from "../core";
 import { getArgRange } from "../helpers";
 import {
@@ -183,12 +184,15 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     (arg.min !== undefined && n < arg.min) ||
                     (arg.max !== undefined && n > arg.max)
                 ) {
-                    return thisArg.createRuntimeError(RuntimeErrorType.Range, [
-                        arg.name,
-                        ArgType[arg.type],
-                        getArgRange(arg),
-                        this.image,
-                    ]);
+                    return thisArg.createRuntimeError(
+                        RuntimeErrorType.NumberRange,
+                        [
+                            arg.name,
+                            ArgType[arg.type],
+                            getArgRange(arg),
+                            this.image,
+                        ]
+                    );
                 }
 
                 data = n;
@@ -200,14 +204,30 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     (arg.min !== undefined && data.length < arg.min) ||
                     (arg.max !== undefined && data.length > arg.max)
                 ) {
-                    return thisArg.createRuntimeError(RuntimeErrorType.Range, [
+                    return thisArg.createRuntimeError(
+                        RuntimeErrorType.StringRange,
+                        [
+                            arg.name,
+                            ArgType[arg.type],
+                            getArgRange(arg),
+                            this.image,
+                        ]
+                    );
+                }
+
+                break;
+            }
+
+            case ArgType.Boolean: {
+                if (!Booleans.includes(data)) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         arg.name,
                         ArgType[arg.type],
-                        getArgRange(arg),
                         this.image,
                     ]);
                 }
 
+                data = Truthy.includes(data);
                 break;
             }
         }

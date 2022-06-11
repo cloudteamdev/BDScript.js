@@ -9,6 +9,6 @@ export class BaseError<Enum extends EnumLike<any>> extends Error {
         params.forEach(
             (x, y) => void (msg = msg.replaceAll(`$${y + 1}`, `${x}`))
         );
-        return msg;
+        return ":x: " + msg;
     }
 }
