@@ -10,7 +10,7 @@ type GetArgType<Type extends ArgType> = Type extends ArgType.Number
     ? string
     : Type extends ArgType.Boolean
     ? boolean
-    : unknown;
+    : never;
 
 export type DecideArgType<
     Type extends ArgType,
