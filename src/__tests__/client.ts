@@ -11,23 +11,15 @@ const bot = new Bot({
         IntentsBitField.Flags.MessageContent,
 });
 
-bot.statuses.setInterval(13_000);
-
 bot.statuses.add({
     status: "dnd",
     name: "I'm busy!",
     type: ActivityType.Playing,
 });
 
-bot.statuses.add({
-    status: "idle",
-    name: "ok!",
-    type: ActivityType.Playing,
-});
-
 bot.commands.messageCommand({
     name: "lol",
-    code: "uwu $authorID $toLowerCase[HI]",
+    code: "uwu $authorID",
 });
 
 bot.events.add("onMessage");

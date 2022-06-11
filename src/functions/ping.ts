@@ -2,11 +2,11 @@ import { ParserFunction, Return } from "../structures";
 import { ArgType } from "../typings";
 
 export default ParserFunction.create({
-    name: "$authorID",
-    description: "Returns the author's ID.",
-    returns: ArgType.String,
+    name: "$ping",
+    description: "Returns the bot's websocket ping.",
+    returns: ArgType.Number,
     nullable: true,
     execute: async function () {
-        return Return.success(this.user?.id);
+        return Return.success(this.client.ws.ping);
     },
 });
