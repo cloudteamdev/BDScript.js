@@ -76,7 +76,7 @@ export class Bot {
         this.#registerDefaultReadyEvent();
         this.client
             .login(token)
-            .then(() => this.statuses._manage())
+            .then(() => this.statuses._manage)
             .catch((err) =>
                 console.error("Failed to login to Discord.\n", err)
             );
