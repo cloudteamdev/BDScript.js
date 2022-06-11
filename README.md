@@ -24,6 +24,12 @@ client.login("token");
 - [ ] Functions
 - [ ] Music
 - [ ] Buttons
+- [x] Argument types
+    - [x] String
+    - [x] Number
+    - [x] Boolean
+    - [ ] Snowflake types
+    - [ ] Enum/option types
 - [ ] Select Menus
 - [ ] Slash Commands
 - [x] Message Commands
