@@ -11,15 +11,15 @@ const bot = new Bot({
         IntentsBitField.Flags.MessageContent,
 });
 
-bot.setStatusInterval(13_000);
+bot.statuses.setInterval(13_000);
 
-bot.addStatus({
+bot.statuses.add({
     status: "dnd",
     name: "I'm busy!",
     type: ActivityType.Playing,
 });
 
-bot.addStatus({
+bot.statuses.add({
     status: "idle",
     name: "ok!",
     type: ActivityType.Playing,
