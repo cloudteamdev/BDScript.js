@@ -11,6 +11,8 @@ export interface ArgData<
     type: Type;
     description: string;
     pointer?: number;
+    min?: number;
+    max?: number;
     default?: (
         value: ThisParserFunction
     ) => Promise<DecideArgType<Type, Optional>>;

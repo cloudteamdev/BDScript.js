@@ -7,6 +7,6 @@ export default ParserFunction.create({
     returns: ArgType.Number,
     nullable: true,
     execute: async function () {
-        return Return.success(this.client.ws.ping);
+        return this.success(this.client.ws.ping);
     },
 });

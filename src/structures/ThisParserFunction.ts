@@ -1,6 +1,14 @@
 import { GuildMember, Message, TextBasedChannel, User } from "discord.js";
-import { Nullable, OutputType, ThisParserFunctionData } from "../typings";
+import { inspect } from "util";
+import {
+    Nullable,
+    OutputType,
+    ReturnType,
+    RuntimeErrorType,
+    ThisParserFunctionData,
+} from "../typings";
 import { Container } from "./Container";
+import { RuntimeError } from "./errors/RuntimeError";
 import { Return } from "./Return";
 
 export class ThisParserFunction<T = unknown> {
@@ -19,10 +27,12 @@ export class ThisParserFunction<T = unknown> {
     async manage<T extends Return>(
         rt: T,
         callback: (
-            received: T extends Return<infer V> ? Exclude<V, null> : never
+            received: T extends Return<infer V>
+                ? Exclude<V, null | RuntimeError>
+                : never
         ) => Return
     ): Promise<Return> {
-        if (rt.isError()) {
+        if (!rt.isSuccess()) {
             return rt;
         }
 
@@ -31,6 +41,26 @@ export class ThisParserFunction<T = unknown> {
 
     get ctx() {
         return this.data.ctx;
+    }
+
+    notify(...args: unknown[]) {
+        const out = args.map((c) => (typeof c === "string" ? c : inspect(c)));
+        const channel = this.getMainChannel();
+        if (!channel) {
+            console.log(...out);
+        } else {
+            this.data.container.reset();
+            this.data.container.send(out.join(" "), channel);
+        }
+    }
+
+    handleUnexpectedReturn(rt: Return) {
+        const value = rt.value;
+
+        if (value instanceof RuntimeError) {
+            this.notify(value.message);
+        }
+        // We don't handle any other return types yet.
     }
 
     /**
@@ -75,6 +105,14 @@ export class ThisParserFunction<T = unknown> {
         return null;
     }
 
+    success<T>(value: T) {
+        return Return["success"](value);
+    }
+
+    error<T>(why: T) {
+        return new Return(why, ReturnType.Return);
+    }
+
     static create<T, O extends OutputType>(
         extras: Partial<ThisParserFunctionData<T, O>>
     ) {
@@ -87,5 +125,9 @@ export class ThisParserFunction<T = unknown> {
             bot: extras.bot!,
             container: extras.container ?? new Container(),
         });
+    }
+
+    createRuntimeError(type: RuntimeErrorType, params: unknown[]) {
+        return new Return(new RuntimeError(type, ...params), ReturnType.Error);
     }
 }

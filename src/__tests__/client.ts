@@ -13,13 +13,13 @@ const bot = new Bot({
 
 bot.statuses.add({
     status: "dnd",
-    name: "I'm busy!",
+    name: "I'm busy! $toUpperCase[bro]",
     type: ActivityType.Playing,
 });
 
 bot.commands.messageCommand({
     name: "lol",
-    code: "uwu $authorID",
+    code: "uwu $floor[bro]",
 });
 
 bot.events.add("onMessage");

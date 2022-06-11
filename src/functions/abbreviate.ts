@@ -21,7 +21,7 @@ export default ParserFunction.create({
                 useGrouping: false,
             }).format(num);
 
-            return Return.success(formatted.toLowerCase());
+            return this.success(formatted.toLowerCase());
         });
     },
 });

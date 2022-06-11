@@ -17,11 +17,19 @@ export class Return<Value = any> {
         return this.type === ReturnType.Error;
     }
 
-    static success<T>(value: T) {
+    /**
+     * This method is no longer accessible this way.
+     * @param value
+     * @returns
+     */
+    private static success<T>(value: T) {
         return new this(value, ReturnType.Success);
     }
 
-    static get error() {
+    /**
+     * This getter is no longer accessible this way.
+     */
+    private static get error() {
         return new this(null, ReturnType.Error);
     }
 }

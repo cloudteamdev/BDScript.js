@@ -1,20 +1,18 @@
-import { Client } from "discord.js";
-import { PresenceData } from "../typings";
+import { Bot } from "../core";
+import { intoFunction } from "../helpers";
+import { Interpreter, ThisParserFunction } from "../structures";
+import { OutputType, PresenceData, StatusData } from "../typings";
+import FunctionManager from "./FunctionManager";
 
 /**
  * Manages the client's status.
  */
 export class StatusManager {
-    #statuses: PresenceData[] = [];
+    #statuses: StatusData[] = [];
     #statusInterval: number = 12_000;
     #statusIndex = 0;
 
-    /**
-     * @param client The client to set the statuses on.
-     */
-    constructor(private client: Client<true>) {
-        this.client = client;
-    }
+    constructor(private readonly bot: Bot) {}
 
     /**
      * Add a status to the bot.
@@ -36,8 +34,22 @@ export class StatusManager {
      * @param data The presence data to add.
      */
     add(data: PresenceData) {
-        this.#statuses.push(data);
+        const compiled =
+            data.name !== undefined ? FunctionManager.compile(data.name) : null;
+
+        this.#statuses.push({
+            ...data,
+            executor: compiled
+                ? intoFunction(compiled.getCompiledCode())
+                : undefined,
+            functions: compiled ? compiled.getFunctions() : undefined,
+        });
+
         return this;
+    }
+
+    get client() {
+        return this.bot.client;
     }
 
     /**
@@ -54,7 +66,29 @@ export class StatusManager {
     /**
      * Sets the bot's status.
      */
-    #setStatus({ status, type, url, name }: PresenceData) {
+    async #setStatus() {
+        if (this.#statuses.length === 0) return;
+
+        const { url, type, status, ...data } =
+            this.#statuses[this.#statusIndex++] ??
+            this.#statuses[(this.#statusIndex = 0)];
+
+        let { name } = data;
+
+        if (data.executor && data.functions) {
+            const got = await Interpreter.run({
+                args: [],
+                ctx: {},
+                bot: this.bot,
+                executor: data.executor,
+                functions: data.functions,
+                output: OutputType.Code,
+            });
+
+            if (!got) return;
+            name = got;
+        }
+
         return this.client.user.setPresence({
             status,
             activities: [
@@ -70,21 +104,8 @@ export class StatusManager {
     /**
      * Manages the bot's status (i.e. status rotation, setting the initial status, etc). This is called automatically when the bot is logged in.
      */
-    _manage(): void {
-        const statuses = this.#statuses;
-
-        const statusCount = statuses.length;
-        if (statusCount === 0) return;
-
-        this.#setStatus(statuses[0]);
-
-        if (statusCount < 2) return;
-        const interval = this.#statusInterval;
-        setInterval(() => {
-            const status =
-                statuses[this.#statusIndex++] ??
-                statuses[(this.#statusIndex = 0)];
-            this.#setStatus(status);
-        }, interval);
+    private _manage(): void {
+        this.#setStatus();
+        setInterval(this.#setStatus.bind(this), this.#statusInterval);
     }
 }

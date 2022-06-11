@@ -17,7 +17,7 @@ export default ParserFunction.create({
     nullable: false,
     execute: async function (d) {
         return this.manage(await d.resolveArray(this), ([str]) => {
-            return Return.success(str.toUpperCase());
+            return this.success(str.toUpperCase());
         });
     },
 });

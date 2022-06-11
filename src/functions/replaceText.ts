@@ -27,7 +27,6 @@ export default ParserFunction.create({
         {
             name: "amountToReplace",
             description: "The amount of times to replace the sample.",
-            optional: true,
             type: ArgType.Number,
         },
     ],
@@ -40,15 +39,15 @@ export default ParserFunction.create({
                 let amount = amountToReplace ?? -1;
 
                 if (amount === -1)
-                    return Return.success(text.replaceAll(sample, replacement));
+                    return this.success(text.replaceAll(sample, replacement));
 
-                if (amount < 1) return Return.success(text);
+                if (amount < 1) return this.success(text);
 
                 while (amount--) {
                     text = text.replace(sample, replacement);
                 }
 
-                return Return.success(text);
+                return this.success(text);
             }
         );
     },

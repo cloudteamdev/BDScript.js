@@ -19,7 +19,7 @@ export default ParserFunction.create({
     nullable: false,
     execute: async function (d) {
         return this.manage(await d.resolveArray(this), ([num]) => {
-            return Return.success(Math.ceil(num));
+            return this.success(Math.ceil(num));
         });
     },
 });

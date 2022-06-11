@@ -1,4 +1,5 @@
 import { Compiler } from "../core";
+import { getArgRange } from "../helpers";
 import {
     ArgData,
     ArgType,
@@ -8,8 +9,10 @@ import {
     FunctionData,
     Nullable,
     ProcessedCompiledFunctionData,
+    RuntimeErrorType,
     UnwrapTuple,
 } from "../typings";
+import { RuntimeError } from "./errors/RuntimeError";
 import { Return } from "./Return";
 import { ThisParserFunction } from "./ThisParserFunction";
 
@@ -57,7 +60,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
 
     async resolveArray(
         thisArg: ThisParserFunction
-    ): Promise<Return<UnwrapTuple<Args> | null>> {
+    ): Promise<Return<RuntimeError | UnwrapTuple<Args> | null>> {
         const args = new Array(this.data.args!.length) as UnwrapTuple<Args>;
 
         for (let i = 0, len = this.data.args!.length; i < len; i++) {
@@ -69,31 +72,33 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             args[i] = got.value as UnwrapTuple<Args>[number];
         }
 
-        return Return.success(args);
+        return thisArg.success(args);
     }
 
     async resolveAll(
         thisArg: ThisParserFunction
-    ): Promise<Return<string | null>> {
+    ): Promise<Return<RuntimeError | string | null>> {
         const arr = new Array(this.data.args!.length);
 
         for (let i = 0, len = this.compiledData?.fields.length!; i < len; i++) {
             const resolved = await this.resolveField(thisArg, i);
-            if (resolved.isError()) {
+            if (!resolved.isSuccess()) {
                 return resolved;
             }
 
             arr[i] = resolved.value;
         }
 
-        return Return.success(arr.join(";"));
+        return thisArg.success(arr.join(";"));
     }
 
     async resolveField<T extends number>(
         thisArg: ThisParserFunction,
         index: T
-    ): Promise<Return<null | UnwrapTuple<Args>[T]>> {
+    ): Promise<Return<RuntimeError | null | UnwrapTuple<Args>[T]>> {
         const field = this.fieldAt(index);
+
+        if (!field) return thisArg.success(null);
 
         const arr = new Array<string>(field.overloads.length);
 
@@ -101,7 +106,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             const overload = field.overloads[i];
             const got = await overload.data.execute.call(thisArg, overload);
 
-            if (got.isError()) {
+            if (!got.isSuccess()) {
                 return got;
             }
 
@@ -112,45 +117,101 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
 
         const total = field.executor!(arr);
 
-        const parsed = await this.parseArg(thisArg, arg, total);
-
-        if (parsed === undefined) {
-            return Return.error;
-        }
-
-        return Return.success(parsed as UnwrapTuple<Args>[T]);
+        return (await this.parseArg(thisArg, arg, total)) as ReturnType<
+            typeof this["resolveField"]
+        >;
     }
 
-    fieldAt(index: number): ProcessedCompiledFunctionData["fields"][number] {
-        return this.compiledData?.fields[index]!;
+    fieldAt(index: number) {
+        return this.compiledData?.fields[index];
+    }
+
+    get image(): string {
+        let inside = this.compiledData!.inside;
+        if (!this.data.brackets || inside === null) return this.data.name;
+
+        for (let i = 0, len = this.compiledData!.fields.length; i < len; i++) {
+            const field = this.fieldAt(i)!;
+            for (let x = 0, len2 = field.overloads.length; x < len2; x++) {
+                const overload = field.overloads[x];
+                inside = inside?.replaceAll(
+                    overload.compiledData!.id,
+                    overload.image
+                );
+            }
+        }
+
+        return `${this.data.name}[${inside}]`;
     }
 
     private async parseArg(
         thisArg: ThisParserFunction,
         arg: ArgData,
         received: string | undefined
-    ): Promise<DecideArgType<ArgType, boolean> | undefined> {
-        let data: DecideArgType<ArgType, boolean> | undefined = received;
+    ): Promise<Return<RuntimeError | DecideArgType<ArgType, boolean>>> {
+        let data: DecideArgType<ArgType, boolean> =
+            received! ?? (await arg.default?.(thisArg)) ?? null;
 
-        if (!arg.optional) {
-            data ??= await arg.default?.(thisArg);
+        if (typeof data !== "string" && data !== undefined) {
+            return thisArg.success(data);
+        }
 
-            if (data === undefined) {
-                return;
-            }
+        if (!arg.optional && data === undefined) {
+            return thisArg.createRuntimeError(RuntimeErrorType.Required, [
+                arg.name,
+                this.image,
+            ]);
+        }
+
+        if (arg.optional && data === undefined) {
+            return thisArg.success(null);
         }
 
         switch (arg.type) {
             case ArgType.Number: {
+                const n = Number(data);
+
+                if (isNaN(n)) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        data,
+                        ArgType[arg.type],
+                        this.image,
+                    ]);
+                }
+
+                if (
+                    (arg.min !== undefined && n < arg.min) ||
+                    (arg.max !== undefined && n > arg.max)
+                ) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Range, [
+                        arg.name,
+                        ArgType[arg.type],
+                        getArgRange(arg),
+                        this.image,
+                    ]);
+                }
+
+                data = n;
                 break;
             }
 
             case ArgType.String: {
-                data = received;
+                if (
+                    (arg.min !== undefined && data.length < arg.min) ||
+                    (arg.max !== undefined && data.length > arg.max)
+                ) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Range, [
+                        arg.name,
+                        ArgType[arg.type],
+                        getArgRange(arg),
+                        this.image,
+                    ]);
+                }
+
                 break;
             }
         }
 
-        return data;
+        return thisArg.success(data);
     }
 }

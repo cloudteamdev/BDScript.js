@@ -7,6 +7,6 @@ export default ParserFunction.create({
     returns: ArgType.String,
     nullable: true,
     execute: async function () {
-        return Return.success(this.client.user.id);
+        return this.success(this.client.user.id);
     },
 });

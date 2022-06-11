@@ -2,13 +2,15 @@ import { OutputType, ThisParserFunctionData } from "../typings";
 import { Container } from "./Container";
 import { ThisParserFunction } from "./ThisParserFunction";
 
-type DecideOutput<T extends OutputType> = T extends OutputType.None
-    ? null
-    : T extends OutputType.Code
-    ? string
-    : T extends OutputType.Container
-    ? Container
-    : string;
+type DecideOutput<T extends OutputType> =
+    | (T extends OutputType.None
+          ? null
+          : T extends OutputType.Code
+          ? string
+          : T extends OutputType.Container
+          ? Container
+          : string)
+    | null;
 
 export class Interpreter {
     private constructor() {}
@@ -25,8 +27,9 @@ export class Interpreter {
 
             const got = await fn.data.execute.call(thisArg, fn);
 
-            if (got.isError()) {
-                return got.value;
+            if (!got.isSuccess()) {
+                thisArg.handleUnexpectedReturn(got);
+                return null;
             }
 
             execution[i] = got.value as string;

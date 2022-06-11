@@ -10,3 +10,5 @@ export * from "./ReplyTypes";
 export * from "./EventTypes";
 export * from "./MessageCommand";
 export * from "./TryOmitType";
+export * from "./GetEnum";
+export * from "./EnumLike";
