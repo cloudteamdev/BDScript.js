@@ -18,7 +18,7 @@ client.login("token");
 - [x] `Bot` class
   - [x] Intents
   - [x] Logging in
-  - [ ] Statuses
+- [x] Statuses
 - [x] Compiler
 - [x] Interpreter
 - [ ] Functions
