@@ -8,4 +8,4 @@ echo "package-lock.json is up to date."
 echo "Running linter..."
 npx lint-staged
 echo "Linting completed."
-echo -e "\e[1;42mReady to commit\e[0;0m"
+echo "Ready to commit."
