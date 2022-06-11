@@ -16,6 +16,11 @@ export class Command<T extends AnyCommandData> {
 
     private executor: ReturnType<typeof intoFunction>;
 
+    /**
+     * Construct a new command.
+     * @param id The ID of this command.
+     * @param data Data about the command.
+     */
     constructor(id: number, data: T) {
         this.data = data;
         this.id = id;
@@ -25,6 +30,9 @@ export class Command<T extends AnyCommandData> {
         this.executor = intoFunction(compiler.getCompiledCode());
     }
 
+    /**
+     * Returns whether or not this command is a message command.
+     */
     isMessageCommand(): this is Command<MessageCommand & CommandDataWithType> {
         return this.data.type === CommandType.MessageCommand;
     }

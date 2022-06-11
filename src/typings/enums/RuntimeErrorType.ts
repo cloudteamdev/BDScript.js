@@ -1,3 +1,6 @@
+/**
+ * Possible runtime error types and their corresponding messages.
+ */
 export enum RuntimeErrorType {
     Type = "Value given for argument '$1' is not of type **$2** in `$3`.",
     Required = "Argument '$1' is **required** in `$2`.",
