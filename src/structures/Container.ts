@@ -14,17 +14,29 @@ export class Container {
     modal = new UnsafeModalBuilder();
     replyType: ReplyTypes = "send";
 
+    /**
+     * The main repliable channel.
+     */
     mainChannel?: unknown;
 
     constructor(mainChannel?: unknown) {
         this.mainChannel = mainChannel;
     }
 
+    /**
+     * Sets the main channel.
+     * @param channel The repliable main channel.
+     */
     setChannel(channel: unknown) {
         this.mainChannel = channel;
         return this;
     }
 
+    /**
+     *
+     * @param content The content to send.
+     * @param channel The channel to send the content to, should be repliable.
+     */
     async send<T>(content?: string, channel?: unknown): Promise<T | null> {
         if (channel) this.mainChannel = channel;
 

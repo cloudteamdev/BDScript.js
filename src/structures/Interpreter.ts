@@ -15,6 +15,9 @@ type DecideOutput<T extends OutputType> =
 export class Interpreter {
     private constructor() {}
 
+    /**
+     * Runs the Interpreter.
+     */
     static async run<T, P extends OutputType = OutputType>(
         data: Omit<ThisParserFunctionData<T, P>, "container">
     ): Promise<DecideOutput<P>> {

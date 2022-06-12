@@ -9,6 +9,9 @@ import {
 } from "../typings";
 import { ParserFunction } from "./ParserFunction";
 
+/**
+ * Represents a command.
+ */
 export class Command<T extends AnyCommandData> {
     id: number;
     data: T;

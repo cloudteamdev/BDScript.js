@@ -59,6 +59,10 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return this.data;
     }
 
+    /**
+     * Returns an array of the provided arguments.
+     * @param thisArg The `this` context of the function builder.
+     */
     async resolveArray(
         thisArg: ThisParserFunction
     ): Promise<Return<RuntimeError | UnwrapTuple<Args> | null>> {
