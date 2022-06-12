@@ -28,8 +28,9 @@ client.login("token");
     - [x] String
     - [x] Number
     - [x] Boolean
-    - [ ] Snowflake types
+    - [ ] Snowflake-based types
     - [ ] Enum/option types
+- [ ] Ellipsis arguments
 - [ ] Select Menus
 - [ ] Slash Commands
 - [x] Message Commands
