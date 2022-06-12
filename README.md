@@ -13,31 +13,36 @@ const client = new Bot({
 client.login("token");
 ```
 
-
 ## Todo
-- [x] `Bot` class
-  - [x] Intents
-  - [x] Logging in
-- [x] Statuses
-- [x] Compiler
-- [x] Interpreter
-- [ ] Functions
-- [ ] Music
-- [ ] Buttons
-- [x] Argument types
-    - [x] String
-    - [x] Number
-    - [x] Boolean
-    - [ ] Snowflake-based types
-    - [ ] Enum/option types
-- [ ] Ellipsis arguments
-- [ ] Select Menus
-- [ ] Slash Commands
-- [x] Message Commands
-- [ ] Context Menus
-- [ ] Command handling
-- [ ] Modals
-- [x] Events
-- [ ] Documentation
-  - [x] Typedoc
-  - [ ] User docs
+
+-   [x] `Bot` class
+    -   [x] Intents
+    -   [x] Logging in
+-   [x] Statuses
+-   [x] Compiler
+-   [x] Interpreter
+-   [ ] Functions
+-   [ ] Music
+-   [ ] Buttons
+-   [x] Argument types
+    -   [x] String
+    -   [x] Number
+    -   [x] Boolean
+    -   [ ] Snowflake-based types
+        -   [ ] User
+        -   [ ] Member
+        -   [ ] Channel
+        -   [ ] Guild
+        -   [ ] Message
+    -   [ ] Enum/option types
+-   [ ] Ellipsis arguments
+-   [ ] Select Menus
+-   [ ] Slash Commands
+-   [x] Message Commands
+-   [ ] Context Menus
+-   [ ] Command handling
+-   [ ] Modals
+-   [x] Events
+-   [ ] Documentation
+    -   [x] Typedoc
+    -   [ ] User docs

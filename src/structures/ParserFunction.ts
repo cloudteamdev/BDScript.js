@@ -1,4 +1,4 @@
-import { Booleans, Falsy, Truthy } from "../constants";
+import { Booleans, Truthy } from "../constants";
 import { Compiler } from "../core";
 import { getArgRange } from "../helpers";
 import {
@@ -232,6 +232,13 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                 }
 
                 data = Truthy.includes(data);
+                break;
+            }
+
+            case ArgType.User: {
+                const user = await thisArg.client.users.fetch(data);
+
+                data = user;
                 break;
             }
         }
