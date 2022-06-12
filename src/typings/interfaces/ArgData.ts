@@ -1,6 +1,7 @@
+import { EnumLike } from "discord.js";
 import { ThisParserFunction } from "../../structures";
 import { ArgType } from "../enums";
-import { DecideArgType } from "../types";
+import { DecideArgType, GetEnum } from "../types";
 
 /**
  * Data about a function argument.

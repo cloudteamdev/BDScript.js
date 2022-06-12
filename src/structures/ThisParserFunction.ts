@@ -77,6 +77,13 @@ export class ThisParserFunction<T = unknown> {
         return this.data.bot;
     }
 
+    /**
+     * Returns data about the command.
+     */
+    get command() {
+        return this.data.command;
+    }
+
     get mainChannel() {
         return (this.#mainChannel ??= this.getMainChannel());
     }
