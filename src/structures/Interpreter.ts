@@ -40,7 +40,9 @@ export class Interpreter {
 
         const raw = thisArg.data.executor(execution);
 
-        thisArg.data.container.send(raw, thisArg.mainChannel);
+        if (thisArg.data.doNotSend !== true) {
+            thisArg.data.container.send(raw, thisArg.mainChannel);
+        }
 
         return (
             thisArg.data.output === undefined ||

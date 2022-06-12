@@ -127,6 +127,7 @@ export class ThisParserFunction<T = unknown> {
             args: extras.args ?? [],
             ctx: extras.ctx!,
             command: extras.command,
+            doNotSend: extras.doNotSend ?? false,
             executor: extras.executor!,
             functions: extras.functions!,
             bot: extras.bot!,

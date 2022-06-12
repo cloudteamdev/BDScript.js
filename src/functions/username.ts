@@ -9,15 +9,19 @@ export default ParserFunction.create({
         {
             name: "user",
             description: "The user to get the username.",
-            optional: true,
             type: ArgType.User,
+            optional: false,
         },
     ],
     brackets: true,
     nullable: true,
     execute: async function (d) {
+        if (!d.hasFields()) {
+            return this.success(this.user?.username);
+        }
+
         return this.manage(await d.resolveArray(this), ([user]) => {
-            return this.success(user?.username ?? this.user?.username);
+            return this.success(user.username);
         });
     },
 });

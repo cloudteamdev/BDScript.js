@@ -10,6 +10,7 @@ export interface ThisParserFunctionData<
     Ctx = unknown,
     Out extends OutputType = OutputType
 > {
+    doNotSend?: boolean;
     ctx: Ctx;
     args: string[];
     bot: Bot;

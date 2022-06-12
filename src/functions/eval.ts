@@ -1,7 +1,8 @@
+import { Compiler } from "../core";
 import { intoFunction } from "../helpers";
 import FunctionManager from "../managers/FunctionManager";
 import { Interpreter, ParserFunction } from "../structures";
-import { ArgType, OutputType } from "../typings";
+import { ArgType, OutputType, RuntimeErrorType } from "../typings";
 
 export default ParserFunction.create({
     name: "$eval",
@@ -22,19 +23,30 @@ export default ParserFunction.create({
             this.success(c)
         );
 
-        const compiled = FunctionManager.compile(code.value);
+        let compiler: Compiler<any>;
 
-        const executor = intoFunction(compiled.getCompiledCode());
-        const functions = compiled.getFunctions();
+        try {
+            compiler = FunctionManager.compile(code.value);
+        } catch (error: any) {
+            return this.createRuntimeError(RuntimeErrorType.Custom, [
+                error.stack,
+            ]);
+        }
+
+        const executor = intoFunction(compiler.getCompiledCode());
+        const functions = compiler.getFunctions();
 
         const result = await Interpreter.run({
             args: [],
-            ctx: this.mainChannel,
+            ctx: this.data.ctx,
             bot: this.bot,
             executor,
+            doNotSend: true,
             functions,
             output: OutputType.Code,
         });
+
+        if (result === null) return this.error(null);
 
         return this.success(result);
     },

@@ -39,7 +39,7 @@ export default new (class {
 
     compile(...params: ConstructorParameters<typeof Compiler>) {
         if (Compiler["FUNCTIONS"] === null) {
-            Compiler.setFunctions(Array.from(this.nativeFunctions.values()));
+            Compiler.setFunctions(this.asRaw());
         }
 
         return new Compiler(...params).start();

@@ -1,6 +1,6 @@
 import { Booleans, Truthy } from "../constants";
 import { Compiler } from "../core";
-import { getArgRange } from "../helpers";
+import { getArgRange, noop } from "../helpers";
 import {
     ArgData,
     ArgType,
@@ -13,6 +13,7 @@ import {
     RuntimeErrorType,
     UnwrapTuple,
 } from "../typings";
+import { Regexes } from "../typings/namespaces";
 import { RuntimeError } from "./errors/RuntimeError";
 import { Return } from "./Return";
 import { ThisParserFunction } from "./ThisParserFunction";
@@ -149,6 +150,10 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return `${this.data.name}[${inside}]`;
     }
 
+    hasFields() {
+        return this.compiledData!.fields.length !== 0;
+    }
+
     private async parseArg(
         thisArg: ThisParserFunction,
         arg: ArgData,
@@ -236,7 +241,23 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             }
 
             case ArgType.User: {
-                const user = await thisArg.client.users.fetch(data);
+                if (!Regexes.USER_ID.test(data)) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        arg.name,
+                        ArgType[arg.type],
+                        this.image,
+                    ]);
+                }
+
+                const user = await thisArg.client.users.fetch(data).catch(noop);
+
+                if (!user) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        arg.name,
+                        ArgType[arg.type],
+                        this.image,
+                    ]);
+                }
 
                 data = user;
                 break;
