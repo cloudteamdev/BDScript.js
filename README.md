@@ -28,13 +28,8 @@ client.login("token");
     - [x] String
     - [x] Number
     - [x] Boolean
-    - [ ] Snowflake types
-          - [ ] User
-          - [ ] Member
-          - [ ] Guild
-          - [ ] Message
-          - [ ] Channel
-          - [ ] Enum/option types
+    - [ ] Snowflake-based types
+    - [ ] Enum/option types
 - [ ] Select Menus
 - [ ] Slash Commands
 - [x] Message Commands
