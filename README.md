@@ -30,6 +30,7 @@ client.login("token");
     - [x] Boolean
     - [ ] Snowflake-based types
     - [ ] Enum/option types
+- [ ] Ellipsis arguments
 - [ ] Select Menus
 - [ ] Slash Commands
 - [x] Message Commands
