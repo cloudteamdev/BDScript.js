@@ -6,4 +6,5 @@ export enum ArgType {
     Number,
     Boolean,
     User,
+    Role,
 }

@@ -1,3 +1,4 @@
+import { Message } from "discord.js";
 import { Booleans, Truthy } from "../constants";
 import { Compiler } from "../core";
 import { getArgRange, noop } from "../helpers";
@@ -241,7 +242,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             }
 
             case ArgType.User: {
-                if (!Regexes.USER_ID.test(data)) {
+                if (!Regexes.ID.test(data)) {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         arg.name,
                         ArgType[arg.type],
@@ -262,8 +263,35 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                 data = user;
                 break;
             }
-        }
 
+            case ArgType.Role: {
+                if (!Regexes.ID.test(data)) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        arg.name,
+                        ArgType[arg.type],
+                        this.image,
+                    ]);
+                }
+
+                const ctx = thisArg.ctx as Message;
+
+                if (!("guild" in ctx))
+                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
+                        `Guild property doesn't exist in this context, can't access roles.`,
+                    ]);
+
+                const role = ctx.guild?.roles.cache.get(data);
+
+                if (!role)
+                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
+                        `Failed to fetch role provided for argument '${arg.name}' in \`${this.image}\`.`,
+                    ]);
+
+                data = role;
+
+                break;
+            }
+        }
         return thisArg.success(data);
     }
 }

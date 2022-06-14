@@ -1,4 +1,4 @@
-import type { User } from "discord.js";
+import type { Role, User } from "discord.js";
 import { ArgType } from "../enums";
 
 type MarkOptional<Type, Optional extends boolean> = Optional extends true
@@ -13,6 +13,8 @@ type GetArgType<Type extends ArgType> = Type extends ArgType.Number
     ? boolean
     : Type extends ArgType.User
     ? User
+    : Type extends ArgType.Role
+    ? Role
     : never;
 
 export type DecideArgType<

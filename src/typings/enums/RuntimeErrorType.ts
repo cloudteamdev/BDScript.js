@@ -7,4 +7,5 @@ export enum RuntimeErrorType {
     Custom = "$1",
     NumberRange = "Argument '$1' expects a **$2** between $3 in `$4`.",
     StringRange = "Argument '$1' expects a **$2** with a length between $3 in `$4`.",
+    InvalidProperty = "Argument '$1' provided for '$2' is not a valid property in `$3`.",
 }
