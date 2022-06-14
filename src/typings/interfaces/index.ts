@@ -12,4 +12,3 @@ export * from "./ProcessedCompiledFunctionData";
 export * from "./PrefixOptions";
 export * from "./BotOptions";
 export * from "./PresenceData";
-export * from "./PropertyHolder";

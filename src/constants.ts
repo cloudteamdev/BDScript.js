@@ -1,4 +1,5 @@
 import { Role as GuildRole } from "discord.js";
+import { createRolePropertyHolder } from "./helpers";
 import { PropertyHolder } from "./typings";
 
 /**
@@ -24,7 +25,7 @@ export const Falsy = ["false", "no"];
  */
 export const Booleans = [...Truthy, ...Falsy];
 
-export const Role: PropertyHolder<GuildRole, string | number | boolean> = {
+export const Role = createRolePropertyHolder({
     name: {
         description: "The name of the role.",
         code: (r) => r.name,
@@ -35,13 +36,12 @@ export const Role: PropertyHolder<GuildRole, string | number | boolean> = {
     },
     hoist: {
         description: "Whether the role is hoisted.",
-        code: (r) => r.hoist + "",
+        code: (r) => r.hoist.toString(),
     },
     icon: {
         description: "The icon URL of the role.",
         code: (r) =>
-            r.iconURL({ size: 2048, extension: "png", forceStatic: false }) ??
-            "",
+            r.iconURL({ size: 2048, extension: "png", forceStatic: false }),
     },
     id: {
         description: "The ID of the role.",
@@ -84,4 +84,4 @@ export const Role: PropertyHolder<GuildRole, string | number | boolean> = {
         description: "The timestamp of when the role was created.",
         code: (r) => r.createdTimestamp,
     },
-};
+});

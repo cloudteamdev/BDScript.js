@@ -16,15 +16,17 @@ import { ArgDefaultMethod, DecideArgType, EnumLike, GetEnum } from "../types";
 export interface ArgData<
     Type extends ArgType = ArgType,
     Optional extends boolean = boolean,
-    Enum extends EnumLike = EnumLike
+    Enum extends EnumLike = EnumLike,
+    Choices extends string[] = string[]
 > {
     name: string;
     optional?: Optional;
     type: Type;
     description: string;
     pointer?: number;
+    choices?: Choices;
     enum?: Enum;
     min?: number;
     max?: number;
-    default?: ArgDefaultMethod<Type, Enum>;
+    default?: ArgDefaultMethod<Type, Enum, Choices>;
 }

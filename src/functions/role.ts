@@ -1,4 +1,5 @@
 import { Role } from "../constants";
+import { objectKeys } from "../helpers";
 import { ParserFunction } from "../structures";
 import { ArgType, RuntimeErrorType } from "../typings";
 
@@ -17,6 +18,7 @@ export default ParserFunction.create({
             name: "property",
             description: "The property to get.",
             type: ArgType.String,
+            choices: objectKeys(Role),
             optional: false,
         },
     ],
@@ -29,7 +31,7 @@ export default ParserFunction.create({
             if (!option)
                 return this.createRuntimeError(
                     RuntimeErrorType.InvalidProperty,
-                    [prop, "property", `$role[${role.id};${prop}]`]
+                    [prop, option, d.image]
                 );
 
             return this.success(option.code(role));

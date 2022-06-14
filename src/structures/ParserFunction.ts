@@ -210,6 +210,20 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             }
 
             case ArgType.String: {
+                if (arg.choices !== undefined && arg.choices.length !== 0) {
+                    for (let i = 0, len = arg.choices.length; i < len; i++) {
+                        const choice = arg.choices[i];
+                        if (choice === data) {
+                            return data;
+                        }
+                    }
+
+                    return thisArg.createRuntimeError(
+                        RuntimeErrorType.InvalidChoice,
+                        this.image
+                    );
+                }
+
                 if (
                     (arg.min !== undefined && data.length < arg.min) ||
                     (arg.max !== undefined && data.length > arg.max)
@@ -224,7 +238,6 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                         ]
                     );
                 }
-
                 break;
             }
 

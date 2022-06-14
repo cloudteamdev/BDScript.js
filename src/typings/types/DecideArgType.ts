@@ -2,6 +2,7 @@ import type { Role, User } from "discord.js";
 import { ArgType } from "../enums";
 import { EnumLike } from "./EnumLike";
 import { GetEnum } from "./GetEnum";
+import { IsArray } from "./IsArray";
 
 type MarkOptional<Type, Optional extends boolean> = Optional extends true
     ? Type | null
@@ -9,11 +10,14 @@ type MarkOptional<Type, Optional extends boolean> = Optional extends true
 
 type GetArgType<
     Type extends ArgType,
-    Enum extends EnumLike
+    Enum extends EnumLike,
+    Choices extends string[]
 > = Type extends ArgType.Number
     ? number
     : Type extends ArgType.String
-    ? string
+    ? IsArray<Choices> extends true
+        ? Choices[number]
+        : string
     : Type extends ArgType.Boolean
     ? boolean
     : Type extends ArgType.User
@@ -27,5 +31,6 @@ type GetArgType<
 export type DecideArgType<
     Type extends ArgType = ArgType,
     Optional extends boolean = boolean,
-    Enum extends EnumLike = EnumLike
-> = MarkOptional<GetArgType<Type, Enum>, Optional>;
+    Enum extends EnumLike = EnumLike,
+    Choices extends string[] = string[]
+> = MarkOptional<GetArgType<Type, Enum, Choices>, Optional>;

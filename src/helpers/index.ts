@@ -6,3 +6,4 @@ export * from "./getArgRange";
 export * from "./log";
 export * from "./isEmptyOrUndefined";
 export * from "./objectKeys";
+export * from "./createPropertyHolder";
