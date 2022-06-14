@@ -8,14 +8,6 @@ export default ParserFunction.create({
     returns: ArgType.String,
     nullable: true,
     execute: async function () {
-        const context = this.ctx as Message;
-
-        if ("content" in context) {
-            return this.success(context.content.split(/\s+/g).slice(1));
-        }
-
-        return this.createRuntimeError(RuntimeErrorType.Custom, [
-            "This context doesn't have a content property.",
-        ]);
+        return this.success(this.data.args.join(" "));
     },
 });

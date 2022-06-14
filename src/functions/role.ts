@@ -1,7 +1,7 @@
 import { Role } from "../constants";
 import { objectKeys } from "../helpers";
 import { ParserFunction } from "../structures";
-import { ArgType, RuntimeErrorType } from "../typings";
+import { ArgType } from "../typings";
 
 export default ParserFunction.create({
     name: "$role",
@@ -9,9 +9,16 @@ export default ParserFunction.create({
     returns: ArgType.String,
     args: [
         {
-            name: "role",
+            name: "guildID",
+            description: "the guild to get the info of the role",
+            type: ArgType.Guild,
+            optional: false,
+        },
+        {
+            name: "roleID",
             description: "The role to get data about.",
             type: ArgType.Role,
+            pointer: 0,
             optional: false,
         },
         {
@@ -25,14 +32,8 @@ export default ParserFunction.create({
     brackets: true,
     nullable: true,
     execute: async function (d) {
-        return this.manage(await d.resolveArray(this), ([role, prop]) => {
+        return this.manage(await d.resolveArray(this), ([, role, prop]) => {
             const option = Role[prop];
-
-            if (!option)
-                return this.createRuntimeError(
-                    RuntimeErrorType.InvalidProperty,
-                    [prop, option, d.image]
-                );
 
             return this.success(option.code(role));
         });

@@ -7,3 +7,4 @@ export * from "./log";
 export * from "./isEmptyOrUndefined";
 export * from "./objectKeys";
 export * from "./createPropertyHolder";
+export * from "./transformArgs";

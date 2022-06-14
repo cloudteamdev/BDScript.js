@@ -1,7 +1,7 @@
-import { Message } from "discord.js";
+import { Guild, Message } from "discord.js";
 import { Booleans, Truthy } from "../constants";
 import { Compiler } from "../core";
-import { getArgRange, noop } from "../helpers";
+import { getArgRange, intoFunction, noop, transformArgs } from "../helpers";
 import {
     ArgData,
     ArgType,
@@ -23,11 +23,42 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
     readonly data: FunctionData<Args>;
     compiledData?: ProcessedCompiledFunctionData;
 
+    private executor: Nullable<ReturnType<typeof intoFunction>> = null;
+
     constructor(data: FunctionData<Args>, compiledData?: CompiledFunctionData) {
         this.data = data;
         if (compiledData !== undefined) {
             this.compiledData = this.#process(compiledData);
+            if (compiledData.inside !== null) {
+                this.executor = this.createImageFunction();
+            }
         }
+    }
+
+    private createImageFunction() {
+        const total = new Array<string>();
+
+        for (let i = 0, len = this.data.args!.length; i < len; i++) {
+            const field = this.compiledData!.fields[i];
+            if (!field) {
+                continue;
+            }
+
+            let raw = field.value;
+            for (let x = 0, len2 = field.overloads.length; x < len2; x++) {
+                const overload = field.overloads[x];
+                raw = raw.replace(overload.compiledData!.id, overload.image);
+            }
+
+            total.push(`\${args[${i}] ?? '${raw.replaceAll(/'/g, "\\'")}'}`);
+        }
+
+        const fn = new Function(
+            `args`,
+            `return \`${this.data.name}[${total.join(";")}]\``
+        ) as ReturnType<typeof intoFunction>;
+
+        return fn;
     }
 
     #process(data: CompiledFunctionData): ProcessedCompiledFunctionData {
@@ -61,6 +92,13 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return this.data;
     }
 
+    transformArgs(args: DecideArgType[]) {
+        return transformArgs(
+            this as unknown as ParserFunction<ArgData[]>,
+            args
+        );
+    }
+
     /**
      * Returns an array of the provided arguments.
      * @param thisArg The `this` context of the function builder.
@@ -68,10 +106,10 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
     async resolveArray(
         thisArg: ThisParserFunction
     ): Promise<Return<RuntimeError | UnwrapTuple<Args> | null>> {
-        const args = new Array(this.data.args!.length) as UnwrapTuple<Args>;
+        const args = new Array() as UnwrapTuple<Args>;
 
         for (let i = 0, len = this.data.args!.length; i < len; i++) {
-            const got = await this.resolveField(thisArg, i);
+            const got = await this.resolveField(thisArg, i, args);
             if (!got.isSuccess()) {
                 return got;
             }
@@ -101,11 +139,15 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
 
     async resolveField<T extends number>(
         thisArg: ThisParserFunction,
-        index: T
+        index: T,
+        current = new Array<DecideArgType>()
     ): Promise<Return<RuntimeError | null | UnwrapTuple<Args>[T]>> {
         const field = this.fieldAt(index);
 
-        if (!field) return thisArg.success(null);
+        const arg = this.data.args![index];
+
+        if (!field)
+            return thisArg.success((await arg.default?.(thisArg)) ?? null);
 
         const arr = new Array<string>(field.overloads.length);
 
@@ -120,17 +162,23 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             arr[i] = got.value;
         }
 
-        const arg = this.data.args![index];
-
         const total = field.executor!(arr);
 
-        return (await this.parseArg(thisArg, arg, total)) as ReturnType<
-            typeof this["resolveField"]
-        >;
+        return (await this.parseArg(
+            thisArg,
+            current,
+            arg,
+            total
+        )) as ReturnType<typeof this["resolveField"]>;
     }
 
     fieldAt(index: number) {
         return this.compiledData?.fields[index];
+    }
+
+    betaImage(params: DecideArgType[]) {
+        if (!this.executor) return this.data.name;
+        return this.executor(this.transformArgs(params));
     }
 
     get image(): string {
@@ -141,7 +189,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             const field = this.fieldAt(i)!;
             for (let x = 0, len2 = field.overloads.length; x < len2; x++) {
                 const overload = field.overloads[x];
-                inside = inside?.replaceAll(
+                inside = inside!.replace(
                     overload.compiledData!.id,
                     overload.image
                 );
@@ -157,6 +205,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
 
     private async parseArg(
         thisArg: ThisParserFunction,
+        current: DecideArgType[],
         arg: ArgData,
         received: string | undefined
     ): Promise<Return<RuntimeError | DecideArgType>> {
@@ -170,7 +219,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         if (!arg.optional && data === undefined) {
             return thisArg.createRuntimeError(RuntimeErrorType.Required, [
                 arg.name,
-                this.image,
+                this.betaImage([...current, data]),
             ]);
         }
 
@@ -179,6 +228,20 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         }
 
         switch (arg.type) {
+            case ArgType.Guild: {
+                const g = thisArg.client.guilds.cache.get(data);
+                if (!g) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        data,
+                        ArgType[arg.type],
+                        this.betaImage([...current, data]),
+                    ]);
+                }
+
+                data = g;
+                break;
+            }
+
             case ArgType.Number: {
                 const n = Number(data);
 
@@ -186,7 +249,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         data,
                         ArgType[arg.type],
-                        this.image,
+                        this.betaImage([...current, data]),
                     ]);
                 }
 
@@ -200,7 +263,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                             arg.name,
                             ArgType[arg.type],
                             getArgRange(arg),
-                            this.image,
+                            this.betaImage([...current, data]),
                         ]
                     );
                 }
@@ -220,7 +283,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
 
                     return thisArg.createRuntimeError(
                         RuntimeErrorType.InvalidChoice,
-                        [arg.name, this.image]
+                        [arg.name, this.betaImage([...current, data])]
                     );
                 }
 
@@ -234,7 +297,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                             arg.name,
                             ArgType[arg.type],
                             getArgRange(arg),
-                            this.image,
+                            this.betaImage([...current, data]),
                         ]
                     );
                 }
@@ -246,7 +309,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         arg.name,
                         ArgType[arg.type],
-                        this.image,
+                        this.betaImage([...current, data]),
                     ]);
                 }
 
@@ -259,7 +322,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         arg.name,
                         ArgType[arg.type],
-                        this.image,
+                        this.betaImage([...current, data]),
                     ]);
                 }
 
@@ -269,7 +332,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         arg.name,
                         ArgType[arg.type],
-                        this.image,
+                        this.betaImage([...current, data]),
                     ]);
                 }
 
@@ -282,7 +345,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                 if (chosen === undefined) {
                     return thisArg.createRuntimeError(RuntimeErrorType.Enum, [
                         arg.name,
-                        this.image,
+                        this.betaImage([...current, data]),
                     ]);
                 }
 
@@ -291,26 +354,23 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             }
 
             case ArgType.Role: {
+                const ptr = current[arg.pointer!] as Guild;
+
                 if (!Regexes.ID.test(data)) {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         arg.name,
                         ArgType[arg.type],
-                        this.image,
+                        this.betaImage([...current, data]),
                     ]);
                 }
 
-                const ctx = thisArg.ctx as Message;
-
-                if (!("guild" in ctx))
-                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
-                        `Guild property doesn't exist in this context, can't access roles.`,
-                    ]);
-
-                const role = ctx.guild?.roles.cache.get(data);
+                const role = ptr.roles.cache.get(data);
 
                 if (!role)
                     return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
-                        `Failed to fetch role provided for argument '${arg.name}' in \`${this.image}\`.`,
+                        `Failed to fetch role provided for argument '${
+                            arg.name
+                        }' in \`${this.betaImage([...current, data])}\`.`,
                     ]);
 
                 data = role;

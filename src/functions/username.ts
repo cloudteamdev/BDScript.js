@@ -20,8 +20,8 @@ export default ParserFunction.create({
             return this.success(this.user?.username);
         }
 
-        return this.manage(await d.resolveArray(this), ([user]) => {
-            return this.success(user.username);
+        return this.manage(await d.resolveArray(this), (params) => {
+            return this.success(params[0].username);
         });
     },
 });

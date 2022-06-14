@@ -19,14 +19,14 @@ export default ParserFunction.create({
     brackets: true,
     nullable: false,
     execute: async function (d) {
-        const code = await this.manage(await d.resolveArray(this), ([c]) =>
-            this.success(c)
-        );
+        const code = await d.resolveAll(this);
+
+        if (!code.isSuccess()) return code;
 
         let compiler: Compiler<any>;
 
         try {
-            compiler = FunctionManager.compile(code.value);
+            compiler = FunctionManager.compile(code.value as string);
         } catch (error: any) {
             return this.createRuntimeError(RuntimeErrorType.Custom, [
                 error.stack,

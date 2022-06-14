@@ -28,6 +28,7 @@ export default ParserFunction.create({
             name: "amountToReplace",
             description: "The amount of times to replace the sample.",
             type: ArgType.Number,
+            default: () => -1,
         },
     ],
     brackets: true,
@@ -35,9 +36,7 @@ export default ParserFunction.create({
     execute: async function (d) {
         return this.manage(
             await d.resolveArray(this),
-            ([text, sample, replacement, amountToReplace]) => {
-                let amount = amountToReplace ?? -1;
-
+            ([text, sample, replacement, amount]) => {
                 if (amount === -1)
                     return this.success(text.replaceAll(sample, replacement));
 

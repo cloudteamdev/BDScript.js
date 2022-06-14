@@ -1,4 +1,4 @@
-import type { Role, User } from "discord.js";
+import type { Guild, Role, User } from "discord.js";
 import { ArgType } from "../enums";
 import { EnumLike } from "./EnumLike";
 import { GetEnum } from "./GetEnum";
@@ -22,6 +22,8 @@ type GetArgType<
     ? boolean
     : Type extends ArgType.User
     ? User
+    : Type extends ArgType.Guild
+    ? Guild
     : Type extends ArgType.Role
     ? Role
     : Type extends ArgType.Enum
