@@ -1,7 +1,6 @@
-import { EnumLike } from "discord.js";
 import { ThisParserFunction } from "../../structures";
 import { ArgType } from "../enums";
-import { DecideArgType, GetEnum } from "../types";
+import { ArgDefaultMethod, DecideArgType, EnumLike, GetEnum } from "../types";
 
 /**
  * Data about a function argument.
@@ -16,16 +15,16 @@ import { DecideArgType, GetEnum } from "../types";
  */
 export interface ArgData<
     Type extends ArgType = ArgType,
-    Optional extends boolean = boolean
+    Optional extends boolean = boolean,
+    Enum extends EnumLike = EnumLike
 > {
     name: string;
     optional?: Optional;
     type: Type;
     description: string;
     pointer?: number;
+    enum?: Enum;
     min?: number;
     max?: number;
-    default?: (
-        value: ThisParserFunction
-    ) => Promise<DecideArgType<Type, Optional>>;
+    default?: ArgDefaultMethod<Type, Enum>;
 }

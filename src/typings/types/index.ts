@@ -12,3 +12,5 @@ export * from "./MessageCommand";
 export * from "./TryOmitType";
 export * from "./GetEnum";
 export * from "./EnumLike";
+export * from "./IsMethod";
+export * from "./ArgDefaultMethod";

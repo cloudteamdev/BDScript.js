@@ -159,8 +159,8 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         thisArg: ThisParserFunction,
         arg: ArgData,
         received: string | undefined
-    ): Promise<Return<RuntimeError | DecideArgType<ArgType, boolean>>> {
-        let data: DecideArgType<ArgType, boolean> =
+    ): Promise<Return<RuntimeError | DecideArgType>> {
+        let data: DecideArgType =
             received! ?? (await arg.default?.(thisArg)) ?? null;
 
         if (typeof data !== "string" && data !== undefined) {
@@ -261,6 +261,19 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                 }
 
                 data = user;
+                break;
+            }
+
+            case ArgType.Enum: {
+                const chosen = arg.enum![data];
+                if (chosen === undefined) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Enum, [
+                        arg.name,
+                        this.image,
+                    ]);
+                }
+
+                data = chosen;
                 break;
             }
 

@@ -1,5 +1,5 @@
 import { ParserFunction, Return } from "../structures";
-import { ArgType } from "../typings";
+import { ArgType, ImageTypes } from "../typings";
 
 export default ParserFunction.create({
     name: "$replaceText",
