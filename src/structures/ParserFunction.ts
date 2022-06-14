@@ -220,7 +220,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
 
                     return thisArg.createRuntimeError(
                         RuntimeErrorType.InvalidChoice,
-                        this.image
+                        [arg.name, this.image]
                     );
                 }
 
