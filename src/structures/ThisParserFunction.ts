@@ -30,13 +30,13 @@ export class ThisParserFunction<T = unknown> {
             received: T extends Return<infer V>
                 ? Exclude<V, null | RuntimeError>
                 : never
-        ) => Return
+        ) => Return | Promise<Return>
     ): Promise<Return> {
         if (!rt.isSuccess()) {
             return rt;
         }
 
-        return callback(rt.value);
+        return await callback(rt.value);
     }
 
     get ctx() {
