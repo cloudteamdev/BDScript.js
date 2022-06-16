@@ -29,12 +29,13 @@ client.login("token");
     -   [x] Number
     -   [x] Boolean
     -   [ ] Snowflake-based types
-        -   [ ] User
+        -   [x] User
         -   [ ] Member
         -   [ ] Channel
-        -   [ ] Guild
+        -   [x] Guild
+        -   [x] Role
         -   [ ] Message
-    -   [ ] Enum/option types
+    -   [x] Enum/option types
 -   [ ] Ellipsis arguments
 -   [ ] Select Menus
 -   [ ] Slash Commands
