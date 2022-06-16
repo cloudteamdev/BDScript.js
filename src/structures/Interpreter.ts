@@ -21,6 +21,9 @@ export class Interpreter {
     static async run<T, P extends OutputType = OutputType>(
         data: Omit<ThisParserFunctionData<T, P>, "container">
     ): Promise<DecideOutput<P>> {
+        /**
+         * Represents this function data as [`ThisParserFunction`](./ThisParserFunction.ts).
+         */
         const thisArg = ThisParserFunction.create(data);
 
         const execution = new Array(thisArg.data.functions.length);

@@ -19,7 +19,7 @@ export interface ProcessedCompiledFunctionData {
     fields: FieldData<ParserFunction<ArgData[]>>[];
 
     /**
-     * The function id.
+     * The function's id.
      */
     id: string;
 }

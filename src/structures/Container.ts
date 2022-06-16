@@ -33,7 +33,7 @@ export class Container {
     }
 
     /**
-     *
+     * Sends a message or something else to the main channel.
      * @param content The content to send.
      * @param channel The channel to send the content to, should be repliable.
      */
@@ -92,6 +92,9 @@ export class Container {
         };
     }
 
+    /**
+     * Resets most of the container.
+     */
     reset() {
         this.replyType = "send";
         this.modal = new UnsafeModalBuilder();

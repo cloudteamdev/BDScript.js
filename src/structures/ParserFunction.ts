@@ -19,12 +19,26 @@ import { RuntimeError } from "./errors/RuntimeError";
 import { Return } from "./Return";
 import { ThisParserFunction } from "./ThisParserFunction";
 
+/**
+ * The class responsible for the parsing of functions and their arguments, and some other stuff.
+ */
 export class ParserFunction<Args extends [...ArgData[]] = []> {
     readonly data: FunctionData<Args>;
+    /**
+     * Processed data of the compiled function.
+     */
     compiledData?: ProcessedCompiledFunctionData;
 
+    /**
+     * The function executor.
+     */
     private executor: Nullable<ReturnType<typeof intoFunction>> = null;
 
+    /**
+     * Create a new instance of `ParserFunction`.
+     * @param data Function data to create a new instance of `ParserFunction` for.
+     * @param compiledData Non-processed Compiled data of the function.
+     */
     constructor(data: FunctionData<Args>, compiledData?: CompiledFunctionData) {
         this.data = data;
         if (compiledData !== undefined) {
@@ -35,6 +49,9 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         }
     }
 
+    /**
+     * Creates a image (the usage) of this function, with the overloads handled.
+     */
     private createImageFunction() {
         const total = new Array<string>();
 
@@ -61,6 +78,10 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return fn;
     }
 
+    /**
+     * Processes the provided [`CompiledFunctionData`](../typings/interfaces/CompiledFunctionData.ts) into [`ProcessedCompiledFunctionData`](../typings/interfaces/ProcessedCompiledFunctionData.ts).
+     * @returns [`ProcessedCompiledFunctionData`](../typings/interfaces/ProcessedCompiledFunctionData.ts)
+     */
     #process(data: CompiledFunctionData): ProcessedCompiledFunctionData {
         return {
             ...data,
@@ -71,16 +92,28 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         };
     }
 
-    // Not finished
+    /**
+     * @todo Not finished
+     */
     getConditionField(_position: number): Nullable<ConditionData> {
         return "" as any;
     }
 
+    /**
+     * Creates a new ParserFunction from the provided [`CompiledFunctionData`](../typings/interfaces/CompiledFunctionData.ts).
+     * @param data The data to create the ParserFunction from.
+     */
     static from(data: CompiledFunctionData): ParserFunction<ArgData[]> {
         const d = Compiler.getNativeFunction(data.name);
         return new ParserFunction(d, data);
     }
 
+    /**
+     * Creates a new ParserFunction from [`FunctionData`](../typings/interfaces/FunctionData.ts)  and [`CompiledFunctionData`](../typings/interfaces/CompiledFunctionData.ts).
+     * @param raw The raw function data to create the ParserFunction from.
+     * @param compiled The compiled function data to create the ParserFunction from.
+     * @returns `ParserFunction`
+     */
     static create<Args extends [...ArgData[]] = []>(
         raw: FunctionData<Args>,
         compiled?: CompiledFunctionData
@@ -88,10 +121,17 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return new this(raw, compiled);
     }
 
+    /**
+     * Returns ParserFunction's data as an [`FunctionData`](../typings/interfaces/FunctionData.ts) object.
+     */
     toJSON() {
         return this.data;
     }
 
+    /**
+     * Transforms the arguments into a their respective forms.
+     * @link See [transformArgs.ts](../helpers/transformArgs.ts) for more information.
+     */
     transformArgs(args: DecideArgType[]) {
         return transformArgs(
             this as unknown as ParserFunction<ArgData[]>,
@@ -102,6 +142,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
     /**
      * Returns an array of the provided arguments.
      * @param thisArg The `this` context of the function builder.
+     * @returns The array of arguments.
      */
     async resolveArray(
         thisArg: ThisParserFunction
@@ -120,6 +161,11 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return thisArg.success(args);
     }
 
+    /**
+     * Resolves all arguments in the function.
+     * @param thisArg The `this` context of the function builder.
+     * @returns The resolved arguments joined by `;`.
+     */
     async resolveAll(
         thisArg: ThisParserFunction
     ): Promise<Return<RuntimeError | string | null>> {
@@ -137,6 +183,13 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return thisArg.success(arr.join(";"));
     }
 
+    /**
+     * Resolves a field of the function.
+     * @param thisArg The `this` context of the function builder.
+     * @param index The index of the argument to resolve.
+     * @param current The current value of the argument.
+     * @returns The resolved value of the argument.
+     */
     async resolveField<T extends number>(
         thisArg: ThisParserFunction,
         index: T,
@@ -172,15 +225,28 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         )) as ReturnType<typeof this["resolveField"]>;
     }
 
+    /**
+     * Gets a field at the provided index.
+     * @param index The index of the argument to get.
+     * @returns The field at a certain index.
+     */
     fieldAt(index: number) {
         return this.compiledData?.fields[index];
     }
 
+    /**
+     * Returns the beta image of this function. `betaImage` is the same as `image` but with overloads *(functions within another function)* parsed.
+     * @param params The arguments to use for the beta image.
+     */
     betaImage(params: DecideArgType[]) {
         if (!this.executor) return this.data.name;
         return this.executor(this.transformArgs(params));
     }
 
+    /**
+     * Returns the image of this function. Use `betaImage()` instead if you want to parse overloads.
+     * @note `image` means the function usage, e.g. `$length[123]`.
+     */
     get image(): string {
         let inside = this.compiledData!.inside;
         if (!this.data.brackets || inside === null) return this.data.name;
@@ -199,10 +265,21 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return `${this.data.name}[${inside}]`;
     }
 
+    /**
+     * Whether this function has arguments.
+     */
     hasFields() {
         return this.compiledData!.fields.length !== 0;
     }
 
+    /**
+     * Parses an argument from a function.
+     * @param thisArg The `this` context of the function builder.
+     * @param current The current arguments.
+     * @param arg Data regarding this argument.
+     * @param received The received value.
+     * @returns The parsed value.
+     */
     private async parseArg(
         thisArg: ThisParserFunction,
         current: DecideArgType[],
@@ -212,9 +289,8 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         let data: DecideArgType =
             received! ?? (await arg.default?.(thisArg)) ?? null;
 
-        if (typeof data !== "string" && data !== undefined) {
+        if (typeof data !== "string" && data !== undefined)
             return thisArg.success(data);
-        }
 
         if (!arg.optional && data === undefined) {
             return thisArg.createRuntimeError(RuntimeErrorType.Required, [
@@ -223,9 +299,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             ]);
         }
 
-        if (arg.optional && data === undefined) {
-            return thisArg.success(null);
-        }
+        if (arg.optional && data === undefined) return thisArg.success(null);
 
         switch (arg.type) {
             case ArgType.Guild: {
@@ -349,6 +423,9 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             }
 
             case ArgType.Role: {
+                /**
+                 * The pointer to the guild (usually from a `guildID` argument).
+                 */
                 const ptr = current[arg.pointer!] as Guild;
 
                 if (!Regexes.ID.test(data)) {
@@ -369,10 +446,10 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     ]);
 
                 data = role;
-
                 break;
             }
         }
+
         return thisArg.success(data);
     }
 }
