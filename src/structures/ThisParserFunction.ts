@@ -1,5 +1,13 @@
-import { GuildMember, Message, TextBasedChannel, User } from "discord.js";
+import {
+    Guild,
+    GuildMember,
+    Message,
+    TextBasedChannel,
+    User,
+} from "discord.js";
 import { inspect } from "util";
+import { createGzip } from "zlib";
+import { hasProperty } from "../helpers";
 import {
     Nullable,
     OutputType,
@@ -18,6 +26,7 @@ export class ThisParserFunction<T = unknown> {
     readonly #keywords: Record<string, string> = {};
 
     #user: Nullable<User> = null;
+    #guild: Nullable<Guild> = null;
     #mainChannel: Nullable<TextBasedChannel> = null;
 
     constructor(data: ThisParserFunctionData<T>) {
@@ -92,6 +101,12 @@ export class ThisParserFunction<T = unknown> {
         return (this.#user ??= this.getUser());
     }
 
+    private getGuild(): Nullable<Guild> {
+        return hasProperty(this.ctx, "guild") && this.ctx.guild instanceof Guild
+            ? this.ctx.guild
+            : null;
+    }
+
     private getUser(): Nullable<User> {
         if (this.ctx instanceof User) {
             return this.ctx;
@@ -102,6 +117,10 @@ export class ThisParserFunction<T = unknown> {
         }
 
         return null;
+    }
+
+    get guild(): Nullable<Guild> {
+        return (this.#guild ??= this.getGuild());
     }
 
     private getMainChannel(): Nullable<TextBasedChannel> {
