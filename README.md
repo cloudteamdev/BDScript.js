@@ -21,7 +21,7 @@ client.login("token");
 -   [x] Statuses
 -   [x] Compiler
 -   [x] Interpreter
--   [ ] Functions
+-   [x] Functions
 -   [ ] Music
 -   [ ] Buttons
 -   [x] Argument types
