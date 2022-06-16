@@ -6,7 +6,6 @@ import {
     User,
 } from "discord.js";
 import { inspect } from "util";
-import { createGzip } from "zlib";
 import { hasProperty } from "../helpers";
 import {
     Nullable,
