@@ -229,7 +229,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
 
         switch (arg.type) {
             case ArgType.Guild: {
-                const g = thisArg.client.guilds.cache.get(data);
+                const g = thisArg.client.guilds.cache.get(data.trim());
                 if (!g) {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         data,
@@ -274,17 +274,12 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
 
             case ArgType.String: {
                 if (arg.choices !== undefined && arg.choices.length !== 0) {
-                    for (let i = 0, len = arg.choices.length; i < len; i++) {
-                        const choice = arg.choices[i];
-                        if (choice === data) {
-                            return data;
-                        }
-                    }
-
-                    return thisArg.createRuntimeError(
-                        RuntimeErrorType.InvalidChoice,
-                        [arg.name, this.betaImage([...current, data])]
-                    );
+                    return arg.choices.includes(data)
+                        ? data
+                        : thisArg.createRuntimeError(
+                              RuntimeErrorType.InvalidChoice,
+                              [arg.name, this.betaImage([...current, data])]
+                          );
                 }
 
                 if (

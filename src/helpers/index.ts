@@ -8,3 +8,5 @@ export * from "./isEmptyOrUndefined";
 export * from "./objectKeys";
 export * from "./createPropertyHolder";
 export * from "./transformArgs";
+export * from "./ordinal";
+export * from "./hasProperty";

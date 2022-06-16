@@ -7,3 +7,4 @@ dist
 */**/*.json
 tsconfig.tsbuildinfo
 pnpm-lock.yaml
+speed.js
