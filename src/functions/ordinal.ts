@@ -1,5 +1,5 @@
 import { ordinal } from "../helpers";
-import { ParserFunction, Return } from "../structures";
+import { ParserFunction } from "../structures";
 import { ArgType, RuntimeErrorType } from "../typings";
 
 export default ParserFunction.create({
@@ -19,7 +19,7 @@ export default ParserFunction.create({
     nullable: false,
     execute: async function (d) {
         return this.manage(await d.resolveArray(this), ([num]) => {
-            if (!Number.isInteger(num))
+            if (num % 1 !== 0)
                 return this.createRuntimeError(RuntimeErrorType.Custom, [
                     `Provided 'number' in \`${d.betaImage([
                         num,

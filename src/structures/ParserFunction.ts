@@ -1,4 +1,4 @@
-import { Guild, Message } from "discord.js";
+import { AnyChannel, Guild, GuildTextBasedChannel, Message } from "discord.js";
 import { Booleans, Truthy } from "../constants";
 import { Compiler } from "../core";
 import { getArgRange, intoFunction, noop, transformArgs } from "../helpers";
@@ -446,6 +446,90 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     ]);
 
                 data = role;
+                break;
+            }
+
+            case ArgType.Channel: {
+                const channel = thisArg.client.channels.cache.get(data);
+
+                if (!Regexes.ID.test(data))
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        arg.name,
+                        ArgType[arg.type],
+                        this.betaImage([...current, data]),
+                    ]);
+
+                if (!channel)
+                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
+                        `Failed to fetch channel provided for argument ${this.betaImage(
+                            [...current, data]
+                        )}.`,
+                    ]);
+
+                data = channel;
+                break;
+            }
+
+            case ArgType.GuildChannel: {
+                /**
+                 * The pointer to the guild (usually from a `guildID` argument).
+                 */
+                const ptr = current[arg.pointer!] as Guild;
+
+                if (!Regexes.ID.test(data))
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        arg.name,
+                        ArgType[arg.type],
+                        this.betaImage([...current, data]),
+                    ]);
+
+                const channel = ptr.channels.cache.get(data);
+
+                if (!channel)
+                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
+                        `Failed to fetch guild channel provided for argument '${
+                            arg.name
+                        }' in \`${this.betaImage([...current, data])}\`.`,
+                    ]);
+
+                data = channel;
+                break;
+            }
+
+            case ArgType.Message: {
+                /**
+                 * The pointer to the text-based channel to get the messages from.
+                 */
+                const ptr = current[arg.pointer!] as AnyChannel;
+
+                if (!ptr.isTextBased())
+                    return thisArg.createRuntimeError(
+                        RuntimeErrorType.TextBasedOnly,
+                        [arg.name, this.betaImage([...current, data])]
+                    );
+
+                if (!Regexes.ID.test(data))
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        arg.name,
+                        ArgType[arg.type],
+                        this.betaImage([...current, data]),
+                    ]);
+                console.log(data);
+                console.log(ptr);
+
+                const message =
+                    ptr.messages.cache.get(data) ??
+                    (await ptr.messages.fetch(data));
+                console.log(message);
+
+                if (!message)
+                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
+                        `Failed to fetch message provided for argument '${
+                            arg.name
+                        }' in \`${this.betaImage([...current, data])}\`.`,
+                    ]);
+
+                data = message;
                 break;
             }
         }

@@ -8,5 +8,8 @@ export enum ArgType {
     Guild,
     User,
     Role,
+    Channel,
+    GuildChannel,
+    Message,
     Enum,
 }

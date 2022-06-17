@@ -34,7 +34,12 @@ export function transformArgs(
                 break;
             }
 
-            case ArgType.User || ArgType.Role || ArgType.Guild: {
+            case ArgType.User:
+            case ArgType.Role:
+            case ArgType.Channel:
+            case ArgType.GuildChannel:
+            case ArgType.Message:
+            case ArgType.Guild: {
                 arr[i] = value.id;
                 break;
             }

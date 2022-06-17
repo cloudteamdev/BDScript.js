@@ -1,4 +1,4 @@
-import { ParserFunction, Return } from "../structures";
+import { ParserFunction } from "../structures";
 import { ArgType } from "../typings";
 
 export default ParserFunction.create({
@@ -18,8 +18,8 @@ export default ParserFunction.create({
     brackets: true,
     nullable: false,
     execute: async function (d) {
-        return this.manage(await d.resolveArray(this), ([num]) => {
-            return this.success(Math.ceil(num));
-        });
+        return this.manage(await d.resolveArray(this), ([num]) =>
+            this.success(Math.ceil(num))
+        );
     },
 });

@@ -1,4 +1,4 @@
-import { ParserFunction, Return } from "../structures";
+import { ParserFunction } from "../structures";
 import { ArgType } from "../typings";
 
 export default ParserFunction.create({

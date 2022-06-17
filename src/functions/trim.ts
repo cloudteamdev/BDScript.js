@@ -25,14 +25,14 @@ export default ParserFunction.create({
     brackets: true,
     nullable: false,
     execute: async function (d) {
-        return this.manage(await d.resolveArray(this), ([str, method]) => {
-            return this.success(
+        return this.manage(await d.resolveArray(this), ([str, method]) =>
+            this.success(
                 method === "start"
                     ? str.trimStart()
                     : method === "end"
                     ? str.trimEnd()
                     : str.trim()
-            );
-        });
+            )
+        );
     },
 });

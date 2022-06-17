@@ -16,12 +16,10 @@ export default ParserFunction.create({
     brackets: true,
     nullable: true,
     execute: async function (d) {
-        if (!d.hasFields()) {
-            return this.success(this.user?.username);
-        }
+        if (!d.hasFields()) return this.success(this.user?.username);
 
-        return this.manage(await d.resolveArray(this), (params) => {
-            return this.success(params[0].username);
+        return this.manage(await d.resolveArray(this), ([user]) => {
+            return this.success(user.username);
         });
     },
 });

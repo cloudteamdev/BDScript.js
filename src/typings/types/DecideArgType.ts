@@ -1,4 +1,11 @@
-import type { Guild, Role, User } from "discord.js";
+import type {
+    Channel,
+    Guild,
+    GuildChannel,
+    Message,
+    Role,
+    User,
+} from "discord.js";
 import { ArgType } from "../enums";
 import { EnumLike } from "./EnumLike";
 import { GetEnum } from "./GetEnum";
@@ -26,6 +33,12 @@ type GetArgType<
     ? Guild
     : Type extends ArgType.Role
     ? Role
+    : Type extends ArgType.Channel
+    ? Channel
+    : Type extends ArgType.GuildChannel
+    ? GuildChannel
+    : Type extends ArgType.Message
+    ? Message
     : Type extends ArgType.Enum
     ? GetEnum<Enum>
     : never;
