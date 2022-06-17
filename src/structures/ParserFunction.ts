@@ -503,7 +503,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                         this.betaImage([...current, data]),
                     ]);
 
-                const message = await ptr.messages.fetch(data);
+                const message = await ptr.messages.fetch(data).catch(noop);
 
                 if (!message)
                     return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
@@ -530,7 +530,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     ]);
                 }
 
-                const member = await ptr.members.fetch(data);
+                const member = await ptr.members.fetch(data).catch(noop);
 
                 if (!member) {
                     return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
@@ -558,7 +558,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                     ]);
                 }
 
-                const sticker = await ptr.stickers.fetch(data);
+                const sticker = await ptr.stickers.fetch(data).catch(noop);
 
                 if (!sticker) {
                     return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
