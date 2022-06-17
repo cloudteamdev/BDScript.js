@@ -38,6 +38,7 @@ client.login("token");
         -   [x] Guild
         -   [x] Role
         -   [x] Message
+        -   [ ] Sticker
     -   [x] Enums
     -   [ ] Duration
 -   [ ] Ellipsis arguments
