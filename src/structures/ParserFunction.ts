@@ -514,8 +514,6 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                         ArgType[arg.type],
                         this.betaImage([...current, data]),
                     ]);
-                console.log(data);
-                console.log(ptr);
 
                 const message =
                     ptr.messages.cache.get(data) ??
