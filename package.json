@@ -19,11 +19,11 @@
         "url": "https://github.com/cloudteamdev/djs-bdscript-next/issues"
     },
     "devDependencies": {
-        "@types/node": "^17.0.42",
+        "@types/node": "^18.0.0",
         "gen-esm-wrapper": "^1.1.3",
         "husky": "^8.0.1",
-        "lint-staged": "^13.0.1",
-        "prettier": "^2.6.2",
+        "lint-staged": "^13.0.2",
+        "prettier": "^2.7.1",
         "typedoc": "^0.22.17",
         "typescript": "4.7.3"
     },
