@@ -2,6 +2,7 @@ import type {
     Channel,
     Guild,
     GuildChannel,
+    GuildMember,
     Message,
     Role,
     User,
@@ -39,6 +40,8 @@ type GetArgType<
     ? GuildChannel
     : Type extends ArgType.Message
     ? Message
+    : Type extends ArgType.Member
+    ? GuildMember
     : Type extends ArgType.Enum
     ? GetEnum<Enum>
     : never;

@@ -24,18 +24,22 @@ client.login("token");
 -   [x] Functions
 -   [ ] Music
 -   [ ] Buttons
+-   [ ] Embeds
 -   [x] Argument types
     -   [x] String
+        -   [x] Options
     -   [x] Number
     -   [x] Boolean
-    -   [ ] Snowflake-based types
+    -   [x] Snowflake-based types
         -   [x] User
-        -   [ ] Member
-        -   [ ] Channel
+        -   [x] Member
+        -   [x] Channel
+        -   [x] GuildChannel
         -   [x] Guild
         -   [x] Role
-        -   [ ] Message
-    -   [x] Enum/option types
+        -   [x] Message
+    -   [x] Enums
+    -   [ ] Duration
 -   [ ] Ellipsis arguments
 -   [ ] Select Menus
 -   [ ] Slash Commands

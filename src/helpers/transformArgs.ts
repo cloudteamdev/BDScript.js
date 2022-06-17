@@ -39,7 +39,8 @@ export function transformArgs(
             case ArgType.Channel:
             case ArgType.GuildChannel:
             case ArgType.Message:
-            case ArgType.Guild: {
+            case ArgType.Guild:
+            case ArgType.Member: {
                 arr[i] = value.id;
                 break;
             }

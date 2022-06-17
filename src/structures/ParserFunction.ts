@@ -515,6 +515,34 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                 data = message;
                 break;
             }
+
+            case ArgType.Member: {
+                /**
+                 * The pointer to the guild (usually from a `guildID` argument).
+                 */
+                const ptr = current[arg.pointer!] as Guild;
+
+                if (!Regexes.ID.test(data)) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Type, [
+                        arg.name,
+                        ArgType[arg.type],
+                        this.betaImage([...current, data]),
+                    ]);
+                }
+
+                const member = await ptr.members.fetch(data);
+
+                if (!member) {
+                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
+                        `Failed to fetch member provided for argument '${
+                            arg.name
+                        }' in \`${this.betaImage([...current, data])}\`.`,
+                    ]);
+                }
+
+                data = member;
+                break;
+            }
         }
 
         return thisArg.success(data);
