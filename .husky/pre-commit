@@ -2,9 +2,6 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 echo "Running pre-commit hook..."
-echo "Updating package-lock.json..."
-npm i --package-lock-only --silent
-echo "package-lock.json is up to date."
 echo "Running linter..."
 npx lint-staged
 echo "Linting completed."
