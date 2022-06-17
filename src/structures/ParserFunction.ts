@@ -349,7 +349,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             case ArgType.String: {
                 if (arg.choices !== undefined && arg.choices.length !== 0) {
                     return arg.choices.includes(data)
-                        ? data
+                        ? thisArg.success(data)
                         : thisArg.createRuntimeError(
                               RuntimeErrorType.InvalidChoice,
                               [arg.name, this.betaImage([...current, data])]
@@ -452,19 +452,13 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
             case ArgType.Channel: {
                 const channel = thisArg.client.channels.cache.get(data);
 
-                if (!Regexes.ID.test(data))
+                if (!channel) {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         arg.name,
                         ArgType[arg.type],
                         this.betaImage([...current, data]),
                     ]);
-
-                if (!channel)
-                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
-                        `Failed to fetch channel provided for argument ${this.betaImage(
-                            [...current, data]
-                        )}.`,
-                    ]);
+                }
 
                 data = channel;
                 break;
@@ -476,21 +470,15 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                  */
                 const ptr = current[arg.pointer!] as Guild;
 
-                if (!Regexes.ID.test(data))
+                const channel = ptr.channels.cache.get(data);
+
+                if (!channel) {
                     return thisArg.createRuntimeError(RuntimeErrorType.Type, [
                         arg.name,
                         ArgType[arg.type],
                         this.betaImage([...current, data]),
                     ]);
-
-                const channel = ptr.channels.cache.get(data);
-
-                if (!channel)
-                    return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
-                        `Failed to fetch guild channel provided for argument '${
-                            arg.name
-                        }' in \`${this.betaImage([...current, data])}\`.`,
-                    ]);
+                }
 
                 data = channel;
                 break;
@@ -515,10 +503,7 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
                         this.betaImage([...current, data]),
                     ]);
 
-                const message =
-                    ptr.messages.cache.get(data) ??
-                    (await ptr.messages.fetch(data));
-                console.log(message);
+                const message = await ptr.messages.fetch(data);
 
                 if (!message)
                     return thisArg.createRuntimeError(RuntimeErrorType.Custom, [
