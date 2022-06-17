@@ -38,7 +38,8 @@ client.login("token");
         -   [x] Guild
         -   [x] Role
         -   [x] Message
-        -   [ ] Sticker
+        -   [x] Sticker
+        -   [ ] Emoji
     -   [x] Enums
     -   [ ] Duration
 -   [ ] Ellipsis arguments
