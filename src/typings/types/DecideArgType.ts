@@ -5,6 +5,7 @@ import type {
     GuildMember,
     Message,
     Role,
+    Sticker,
     User,
 } from "discord.js";
 import { ArgType } from "../enums";
@@ -42,6 +43,8 @@ type GetArgType<
     ? Message
     : Type extends ArgType.Member
     ? GuildMember
+    : Type extends ArgType.Sticker
+    ? Sticker
     : Type extends ArgType.Enum
     ? GetEnum<Enum>
     : never;

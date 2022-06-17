@@ -12,5 +12,6 @@ export enum ArgType {
     GuildChannel,
     Message,
     Member,
+    Sticker,
     Enum,
 }

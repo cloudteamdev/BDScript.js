@@ -40,7 +40,8 @@ export function transformArgs(
             case ArgType.GuildChannel:
             case ArgType.Message:
             case ArgType.Guild:
-            case ArgType.Member: {
+            case ArgType.Member:
+            case ArgType.Sticker: {
                 arr[i] = value.id;
                 break;
             }
