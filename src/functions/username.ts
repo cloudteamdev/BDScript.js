@@ -18,8 +18,8 @@ export default ParserFunction.create({
     execute: async function (d) {
         if (!d.hasFields()) return this.success(this.user?.username);
 
-        return this.manage(await d.resolveArray(this), ([user]) => {
-            return this.success(user.username);
-        });
+        return this.manage(await d.resolveArray(this), ([user]) =>
+            this.success(user.username)
+        );
     },
 });

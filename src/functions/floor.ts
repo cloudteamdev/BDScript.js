@@ -17,8 +17,8 @@ export default ParserFunction.create({
     brackets: true,
     nullable: false,
     execute: async function (d) {
-        return this.manage(await d.resolveArray(this), ([num]) => {
-            return this.success(Math.floor(num));
-        });
+        return this.manage(await d.resolveArray(this), ([num]) =>
+            this.success(Math.floor(num))
+        );
     },
 });

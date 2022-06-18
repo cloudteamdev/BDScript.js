@@ -16,8 +16,8 @@ export default ParserFunction.create({
     brackets: true,
     nullable: false,
     execute: async function (d) {
-        return this.manage(await d.resolveArray(this), ([num]) => {
-            return this.success(Math.round(num));
-        });
+        return this.manage(await d.resolveArray(this), ([num]) =>
+            this.success(Math.round(num))
+        );
     },
 });
