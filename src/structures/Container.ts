@@ -3,6 +3,7 @@ import {
     InteractionReplyOptions,
     MessageOptions,
     TextChannel,
+    UnsafeEmbedBuilder,
     UnsafeModalBuilder,
 } from "discord.js";
 import { noop } from "../helpers";
@@ -71,6 +72,7 @@ export class Container {
                 }
             }
         }
+
         // We can reply to any object that has the send method.
         else if (this.replyType in (receipt as object)) {
             value = (await (receipt as TextChannel)
@@ -81,6 +83,14 @@ export class Container {
         this.reset();
 
         return value ?? null;
+    }
+
+    embedAt(index: number): UnsafeEmbedBuilder {
+        this.data.embeds ??= [];
+        const embed =
+            this.data.embeds[index] ??
+            (this.data.embeds[index] = new UnsafeEmbedBuilder());
+        return embed as UnsafeEmbedBuilder;
     }
 
     static get DefaultOptions(): MessageOptions & InteractionReplyOptions {
