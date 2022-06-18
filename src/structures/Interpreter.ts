@@ -19,7 +19,9 @@ export class Interpreter {
      * Runs the Interpreter.
      */
     static async run<T, P extends OutputType = OutputType>(
-        data: Omit<ThisParserFunctionData<T, P>, "container">
+        data:
+            | ThisParserFunctionData<T, P>
+            | Omit<ThisParserFunctionData<T, P>, "container">
     ): Promise<DecideOutput<P>> {
         /**
          * Represents this function data as [`ThisParserFunction`](./ThisParserFunction.ts).

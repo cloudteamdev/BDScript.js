@@ -41,6 +41,7 @@ export default ParserFunction.create({
             ctx: this.data.ctx,
             bot: this.bot,
             executor,
+            container: this.data.container,
             doNotSend: true,
             functions,
             output: OutputType.Code,
