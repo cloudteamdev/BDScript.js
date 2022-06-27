@@ -10,11 +10,12 @@ export type Unwrap<T> = T extends ArgData<
     infer Type,
     infer Optional,
     infer Enum,
-    infer Choices
+    infer Choices,
+    infer Rest
 >
     ? IsMethod<T["default"]> extends true
         ?
-              | DecideArgType<Type, false, Enum, Choices>
+              | DecideArgType<Type, false, Enum, Choices, Rest>
               | ReturnType<Exclude<T["default"], undefined>>
-        : DecideArgType<Type, false, Enum, Choices>
+        : DecideArgType<Type, Optional, Enum, Choices, Rest>
     : never;

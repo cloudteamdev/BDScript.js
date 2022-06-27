@@ -39,7 +39,7 @@ export default ParserFunction.create({
             await d.resolveArray(this),
             ([guild, member, duration, reason]) => {
                 return member
-                    .timeout(duration, reason)
+                    .timeout(duration, reason ?? undefined)
                     .then(() => this.success(""))
                     .catch((err) =>
                         this.createRuntimeError(RuntimeErrorType.FailedAction, [

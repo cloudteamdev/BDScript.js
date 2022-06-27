@@ -11,6 +11,7 @@ export default ParserFunction.create({
             description: "The index of the embed to set the description of.",
             type: ArgType.Number,
             min: 1,
+            optional: false,
             max: 10,
         },
         {

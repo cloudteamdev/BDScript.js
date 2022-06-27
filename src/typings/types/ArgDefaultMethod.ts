@@ -9,4 +9,6 @@ export type ArgDefaultMethod<
     Choices extends string[]
 > = (
     thisArg: ThisParserFunction
-) => Promise<DecideArgType<Type, true, Enum>> | DecideArgType<Type, true, Enum>;
+) =>
+    | Promise<DecideArgType<Type, true, Enum, Choices>>
+    | DecideArgType<Type, true, Enum, Choices>;

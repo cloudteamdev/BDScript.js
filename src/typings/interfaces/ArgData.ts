@@ -8,7 +8,8 @@ export interface ArgData<
     Type extends ArgType = ArgType,
     Optional extends boolean = boolean,
     Enum extends EnumLike = EnumLike,
-    Choices extends string[] = string[]
+    Choices extends string[] = string[],
+    Rest extends boolean = boolean
 > {
     /**
      * The name of the argument.
@@ -51,4 +52,6 @@ export interface ArgData<
      * If the argument is optional and no value is given, this will be used. Should be an async function that resolves to the defined type.
      */
     default?: ArgDefaultMethod<Type, Enum, Choices>;
+
+    rest?: Rest;
 }

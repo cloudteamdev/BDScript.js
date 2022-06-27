@@ -12,9 +12,22 @@ import { ArgType } from "../enums";
 import { EnumLike } from "./EnumLike";
 import { GetEnum } from "./GetEnum";
 import { IsArray } from "./IsArray";
+import { Nullable } from "./Nullable";
 
-type MarkOptional<Type, Optional extends boolean> = Optional extends true
-    ? Type | null
+type IsTrue<T extends boolean> = T extends true
+    ? T extends false
+        ? false
+        : true
+    : false;
+
+type MarkOptional<
+    Type,
+    Optional extends boolean,
+    Rest extends boolean
+> = IsTrue<Rest> extends true
+    ? Type[]
+    : Optional extends true
+    ? Nullable<Type>
     : Type;
 
 type GetArgType<
@@ -53,5 +66,6 @@ export type DecideArgType<
     Type extends ArgType = ArgType,
     Optional extends boolean = boolean,
     Enum extends EnumLike = EnumLike,
-    Choices extends string[] = string[]
-> = MarkOptional<GetArgType<Type, Enum, Choices>, Optional>;
+    Choices extends string[] = string[],
+    Rest extends boolean = boolean
+> = MarkOptional<GetArgType<Type, Enum, Choices>, Optional, Rest>;

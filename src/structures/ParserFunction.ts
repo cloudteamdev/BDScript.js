@@ -8,6 +8,7 @@ import {
     CompiledFunctionData,
     ConditionData,
     DecideArgType,
+    FieldData,
     FunctionData,
     Nullable,
     ProcessedCompiledFunctionData,
@@ -183,6 +184,22 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
         return thisArg.success(arr.join(";"));
     }
 
+    private async parseOverload(
+        thisArg: ThisParserFunction,
+        field: FieldData<ParserFunction<ArgData[]>>,
+        i: number,
+        ref: Array<string>
+    ): Promise<true | Return> {
+        const overload = field.overloads[i];
+        const got = await overload.data.execute.call(thisArg, overload);
+
+        if (!got.isSuccess()) {
+            return got;
+        }
+
+        ref[i] = got.value;
+        return true;
+    }
     /**
      * Resolves a field of the function.
      * @param thisArg The `this` context of the function builder.
@@ -193,36 +210,60 @@ export class ParserFunction<Args extends [...ArgData[]] = []> {
     async resolveField<T extends number>(
         thisArg: ThisParserFunction,
         index: T,
-        current = new Array<DecideArgType>()
+        current = new Array<DecideArgType>(),
+        arg?: ArgData,
+        skipRest = false
     ): Promise<Return<RuntimeError | null | UnwrapTuple<Args>[T]>> {
         const field = this.fieldAt(index);
 
-        const arg = this.data.args![index];
+        arg ??= this.data.args![index];
 
         if (!field)
             return thisArg.success((await arg.default?.(thisArg)) ?? null);
 
-        const arr = new Array<string>(field.overloads.length);
+        if (arg.rest && !skipRest) {
+            const result = new Array<DecideArgType>();
 
-        for (let i = 0, len = field.overloads.length; i < len; i++) {
-            const overload = field.overloads[i];
-            const got = await overload.data.execute.call(thisArg, overload);
-
-            if (!got.isSuccess()) {
-                return got;
+            let it: FieldData<ParserFunction<ArgData[]>> | undefined;
+            while ((it = this.fieldAt(index))) {
+                if (!it) break;
+                const got = await this.resolveField(
+                    thisArg,
+                    index++,
+                    result,
+                    arg,
+                    true
+                );
+                if (!got.isSuccess()) return got;
+                result.push(got.value);
             }
 
-            arr[i] = got.value;
+            return thisArg.success(result) as ReturnType<
+                typeof this["resolveField"]
+            >;
+        } else {
+            const arr = new Array<string>(field.overloads.length);
+
+            for (let i = 0, len = field.overloads.length; i < len; i++) {
+                const exec = await this.parseOverload(
+                    thisArg,
+                    field,
+                    index,
+                    arr
+                );
+
+                if (exec !== true) return exec;
+            }
+
+            const total = field.executor!(arr);
+
+            return (await this.parseArg(
+                thisArg,
+                current,
+                arg,
+                total
+            )) as ReturnType<typeof this["resolveField"]>;
         }
-
-        const total = field.executor!(arr);
-
-        return (await this.parseArg(
-            thisArg,
-            current,
-            arg,
-            total
-        )) as ReturnType<typeof this["resolveField"]>;
     }
 
     /**
