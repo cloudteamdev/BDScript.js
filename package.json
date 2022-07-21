@@ -30,7 +30,7 @@
     "dependencies": {
         "discord.js": "^14.0.0-dev.1654519696-fba9710",
         "tslib": "^2.4.0",
-        "undici": "^5.5.1"
+        "undici": "^5.8.0"
     },
     "lint-staged": {
         "*.ts": "npx prettier --write --config .prettierrc"
